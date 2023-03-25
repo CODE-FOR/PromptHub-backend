@@ -11,10 +11,12 @@ class User(models.Model):
         is_confirmed: whether email is confirmed
         is_banned:
     """
-    username = models.CharField(max_length=256)
+    email = models.EmailField(unique=True)
     password = models.CharField(max_length=256)
-    email = models.EmailField()
+    nickname = models.CharField(max_length=256)
+    
     avatar = models.URLField()
     followers = models.ManyToManyField("User")
     is_confirmed = models.BooleanField(default=False)
     is_banned = models.BooleanField(default=False)
+    is_delete = models.BooleanField(default=False)

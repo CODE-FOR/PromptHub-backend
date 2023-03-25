@@ -9,7 +9,7 @@
 
 * email：unique
 * password
-* username：nickname
+* nickname
 * avatar：图像url
 * followers
 * is_delete：safe delete
@@ -38,13 +38,16 @@
     * 审核中
     * 下架中
 * is_delete：safe delete
+* tag
 
 ### 标签 tag
 
-* Prompt
+* tag
+* prompt
 
 ### 通知 notification
 
+* user
 * content
 * status：read和unread
 * created_at
