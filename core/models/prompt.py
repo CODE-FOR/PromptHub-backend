@@ -1,6 +1,5 @@
 from django.db import models
 from .user import User
-from .tag import Tag
 
 
 UPLOAD_STATUS_CHOICES = (
@@ -25,8 +24,8 @@ class Prompt(models.Model):
     width = models.IntegerField()
     height = models.IntegerField()
     uploader = models.ForeignKey(User, on_delete=models.CASCADE, related_name="prompts")
-    upload_status = models.IntegerFiled(choices=UPLOAD_STATUS_CHOICES)
+    upload_status = models.IntegerField(choices=UPLOAD_STATUS_CHOICES)
     is_delete = models.BooleanField(default=False)
-    tag = models.ManyToManyField(to=Tag, related_name="prompt_list")
+    tag = models.ManyToManyField(to="Tag", related_name="prompt_list") # Can not use Tag Object due to circular import
 
 
