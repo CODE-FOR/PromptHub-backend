@@ -3,7 +3,10 @@ from django.views.decorators.http import require_http_methods
 from core.models.user import User
 from .utils import response_wrapper, success_api_response, failed_api_responce
 
+from .auth import admin_jwt_auth
+
 @response_wrapper
+@admin_jwt_auth()
 @require_http_methods("GET")
 def get_all_users(request: HttpRequest):
     users = User.objects.all()

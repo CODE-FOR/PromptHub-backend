@@ -14,5 +14,7 @@ urlpatterns = [
 
     # user apis
     path("user_obtain_token", user_obtain_jwt_token),
+
+    # refresh token
     path("refresh_token", refresh_jwt_token)
 ]

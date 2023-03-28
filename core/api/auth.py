@@ -76,14 +76,19 @@ def generate_refresh_token(id: int, account_type: str, refresh_token_delta: int 
 @require_http_methods("POST")
 def user_obtain_jwt_token(request: HttpRequest):
     data = json.loads(request.body.decode("utf-8"))
-    # TODO check email & password valid
     email = data.get("email")
     password = data.get("password")
-    user_id = 1
+    user = User.objects.filter(email=email).first()
+    
+    if user is None:
+        return auth_failed("Account does not exist")
+    if user.password != password:
+        return auth_failed("Password Error")
+    
     return success_api_response(
         data={
-            "access_token": generate_access_token(user_id, ACCOUNT_TYPE_USER),
-            "refresh_token": generate_refresh_token(user_id, ACCOUNT_TYPE_USER)
+            "access_token": generate_access_token(user.id, ACCOUNT_TYPE_USER),
+            "refresh_token": generate_refresh_token(user.id, ACCOUNT_TYPE_USER)
         }
     )
 
@@ -91,14 +96,19 @@ def user_obtain_jwt_token(request: HttpRequest):
 @require_http_methods("POST")
 def admin_obtain_jwt_token(request: HttpRequest):
     data = json.loads(request.body.decode("utf-8"))
-    # TODO check username & password valid
     username = data.get("username")
     password = data.get("password")
-    admin_id = 1
+    admin = Admin.objects.filter(username=username).first()
+
+    if admin is None:
+        return auth_failed("Account does not exist")
+    if admin.password != password:
+        return auth_failed("Password Error")
+    
     return success_api_response(
         data={
-            "access_token": generate_access_token(admin_id, ACCOUNT_TYPE_ADMIN),
-            "refresh_token": generate_refresh_token(admin_id, ACCOUNT_TYPE_ADMIN)
+            "access_token": generate_access_token(admin.id, ACCOUNT_TYPE_ADMIN),
+            "refresh_token": generate_refresh_token(admin.id, ACCOUNT_TYPE_ADMIN)
         }
     )
 
@@ -130,7 +140,7 @@ def refresh_jwt_token(request: HttpRequest):
         if token.get("token_type") != "refresh_token":
             raise jwt.InvalidTokenError
         expiration_time = str_to_datetime(token.get("expiration_time"))
-        if expiration_time < datetime.now():
+        if expiration_time < timezone.now():
             raise jwt.ExpiredSignatureError
         
         return success_api_response(
@@ -172,7 +182,7 @@ def verify_jwt_token(request: HttpRequest):
         if token.get("token_type") != "access_token":
             raise jwt.InvalidTokenError
         expiration_time = str_to_datetime(token.get("expiration_time"))
-        if expiration_time < datetime.now():
+        if expiration_time < timezone.now():
             raise jwt.ExpiredSignatureError
         
         return (token.get("id"), None, token.get("account_type"))
@@ -181,7 +191,7 @@ def verify_jwt_token(request: HttpRequest):
     except jwt.InvalidTokenError:
         return (-1, "Invalid Token", None)
 
-def jwt_auth():
+def user_jwt_auth():
     def decorator(func):
         def wrapper(request: HttpRequest, *args, **kwargs):
             id, message, account_type = verify_jwt_token(request)
@@ -189,19 +199,34 @@ def jwt_auth():
             if id == -1:
                 return auth_failed(message)
             
-            if account_type == ACCOUNT_TYPE_USER:
-                user = User.objects.filter(pk=id, is_banned=False, is_delete=False).first()
-                if user is None:
-                    return auth_failed("Account does not exist Or Account has been banned")
-                request.user = user
-                return func(request, *args, **kwargs)
+            if account_type != ACCOUNT_TYPE_USER:
+                return auth_failed("Account has no permission")
             
-            elif account_type == ACCOUNT_TYPE_ADMIN:
-                admin = Admin.objects.filter(pk=id).first()
-                if admin is None:
-                    return auth_failed("Account does not exist")
-                request.user = admin
-                return func(request, *args, **kwargs)
+            user = User.objects.filter(pk=id, is_banned=False, is_delete=False).first()
+            if user is None:
+                return auth_failed("Account does not exist Or Account has been banned")
+            request.user = user
+            return func(request, *args, **kwargs)
+            
+        return wrapper
+    return decorator
+
+def admin_jwt_auth():
+    def decorator(func):
+        def wrapper(request: HttpRequest, *args, **kwargs):
+            id, message, account_type = verify_jwt_token(request)
+
+            if id == -1:
+                return auth_failed(message)
+            
+            if account_type != ACCOUNT_TYPE_ADMIN:
+                return auth_failed("Account has no permission")
+            
+            admin = Admin.objects.filter(pk=id).first()
+            if admin is None:
+                return auth_failed("Account does not exist")
+            request.user = admin
+            return func(request, *args, **kwargs)
             
         return wrapper
     return decorator
