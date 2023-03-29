@@ -7,7 +7,8 @@ from django.utils import timezone
 from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
 
-from .utils import StatusCode, failed_api_responce, success_api_response, response_wrapper
+from .utils import StatusCode, failed_api_responce, success_api_response, \
+                   response_wrapper, failed_parse_data_response, parse_data
 
 from core.models.admin import Admin
 from core.models.user import User
@@ -75,15 +76,19 @@ def generate_refresh_token(id: int, account_type: str, refresh_token_delta: int 
 @response_wrapper
 @require_http_methods("POST")
 def user_obtain_jwt_token(request: HttpRequest):
-    data = json.loads(request.body.decode("utf-8"))
+    data = parse_data(request)
+    if data is None:
+        return failed_parse_data_response()
+    
     email = data.get("email")
     password = data.get("password")
-    user = User.objects.filter(email=email).first()
     
-    if user is None:
-        return auth_failed("Account does not exist")
+    if not User.objects.filter(email=email, is_banned=False, is_delete=False).exists():
+        return auth_failed("Account does not exist or Account has been banned")
+    user = User.objects.get(email=email)
+        
     if user.password != password:
-        return auth_failed("Password Error")
+        return auth_failed("Wrong Password")
     
     return success_api_response(
         data={
@@ -95,15 +100,19 @@ def user_obtain_jwt_token(request: HttpRequest):
 @response_wrapper
 @require_http_methods("POST")
 def admin_obtain_jwt_token(request: HttpRequest):
-    data = json.loads(request.body.decode("utf-8"))
+    data = parse_data(request)
+    if data is None:
+        return failed_parse_data_response()
+    
     username = data.get("username")
     password = data.get("password")
-    admin = Admin.objects.filter(username=username).first()
 
-    if admin is None:
+    if not Admin.objects.filter(username=username).exists():
         return auth_failed("Account does not exist")
+    admin = Admin.objects.get(username=username)
+
     if admin.password != password:
-        return auth_failed("Password Error")
+        return auth_failed("Wrong Password")
     
     return success_api_response(
         data={
@@ -202,12 +211,12 @@ def user_jwt_auth():
             if account_type != ACCOUNT_TYPE_USER:
                 return auth_failed("Account has no permission")
             
-            user = User.objects.filter(pk=id, is_banned=False, is_delete=False).first()
-            if user is None:
+            if not User.objects.filter(pk=id, is_banned=False, is_delete=False).exists():
                 return auth_failed("Account does not exist Or Account has been banned")
+            user = User.objects.get(pk=id, is_banned=False, is_delete=False)
+
             request.user = user
             return func(request, *args, **kwargs)
-            
         return wrapper
     return decorator
 
@@ -222,11 +231,11 @@ def admin_jwt_auth():
             if account_type != ACCOUNT_TYPE_ADMIN:
                 return auth_failed("Account has no permission")
             
-            admin = Admin.objects.filter(pk=id).first()
-            if admin is None:
+            if not Admin.objects.filter(pk=id).exists():
                 return auth_failed("Account does not exist")
+            admin = Admin.objects.get(pk=id)
+
             request.user = admin
             return func(request, *args, **kwargs)
-            
         return wrapper
     return decorator
