@@ -4,7 +4,7 @@ utils for generating api responses
 import json
 from enum import Enum, unique
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpRequest
 
 @unique
 class StatusCode(Enum):
@@ -49,3 +49,12 @@ def response_wrapper(func):
             response = JsonResponse(response["data"])
         return response
     return inner
+
+def failed_parse_data_response():
+    return failed_api_responce(StatusCode.BAD_REQUEST, "Parse Data Error")
+
+def parse_data(request: HttpRequest):
+    try:
+        return json.loads(request.body.decode("utf-8"))
+    except json.JSONDecodeError:
+        return None
