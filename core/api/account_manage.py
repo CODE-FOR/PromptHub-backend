@@ -23,7 +23,7 @@ def sign_up(request: HttpRequest):
         return failed_api_responce(StatusCode.CONFLICT, "Email already exists")
     
     send_sign_in_email(email)
-    return success_api_response({"msg": "Verification code has been sent"})
+    return success_api_response(msg="Verification code has been sent")
 
 @response_wrapper
 @require_http_methods("PUT")
@@ -60,7 +60,7 @@ def confirm_and_create(request: HttpRequest):
         email=email, password=password, nickname=nickname, is_confirmed=True
     )
     user.save()
-    return success_api_response({"msg": "Successfully sign up"})
+    return success_api_response(msg="Successfully sign up")
 
 @response_wrapper
 @require_http_methods("POST")
@@ -76,7 +76,7 @@ def forget_password(request: HttpRequest):
         return failed_api_responce(StatusCode.CONFLICT, "Email does not exist")
     
     send_forget_password_email(email)
-    return success_api_response({"msg": "Verification code has been sent"})
+    return success_api_response(msg="Verification code has been sent")
 
 @response_wrapper
 @require_http_methods("PUT")
@@ -109,7 +109,7 @@ def confirm_forget_password(request: HttpRequest):
     user = User.objects.get(email=email)
     user.password = password
     user.save()
-    return success_api_response({"msg": "Successfully change password"})
+    return success_api_response(msg="Successfully change password")
 
 @response_wrapper
 @user_jwt_auth()
@@ -127,7 +127,7 @@ def change_password(request: HttpRequest):
     new_password = data.get("new_password")
     user.password = new_password
     user.save()
-    return success_api_response({"msg": "Successfully change password"})
+    return success_api_response(msg="Successfully change password")
 
 
 

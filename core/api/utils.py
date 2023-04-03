@@ -17,9 +17,10 @@ class StatusCode(Enum):
     SERVER_ERROR = 501
     ID_NOT_EXISTS = 555
 
-def api_responce(code: int, data: dict) -> dict:
+def api_responce(code: int, msg: str, data: dict) -> dict:
     return {
         "code": code,
+        "msg": msg,
         "data": data
     }
 
@@ -31,14 +32,14 @@ def failed_api_responce(status_code, error_msg=None) -> dict:
 
     return api_responce(
         code=status_code.value,
-        data={
-            "error_msg": error_msg
-        }
+        msg=error_msg,
+        data={}
     )
 
-def success_api_response(data: dict) -> dict:
+def success_api_response(msg: str, data: dict) -> dict:
     return api_responce(
         code=StatusCode.SUCCESS.value,
+        msg=msg,
         data=data
     )
 

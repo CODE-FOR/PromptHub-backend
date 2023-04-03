@@ -13,4 +13,4 @@ def get_all_users(request: HttpRequest):
     string = ""
     for user in users:
         string += user.nickname + "\n"
-    return success_api_response({"name": string})
+    return success_api_response(msg="Success", data={"name": string})

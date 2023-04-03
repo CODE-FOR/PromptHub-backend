@@ -91,6 +91,7 @@ def user_obtain_jwt_token(request: HttpRequest):
         return auth_failed("Wrong Password")
     
     return success_api_response(
+        msg="Successfully obtain user tokens",
         data={
             "access_token": generate_access_token(user.id, ACCOUNT_TYPE_USER),
             "refresh_token": generate_refresh_token(user.id, ACCOUNT_TYPE_USER)
@@ -115,6 +116,7 @@ def admin_obtain_jwt_token(request: HttpRequest):
         return auth_failed("Wrong Password")
     
     return success_api_response(
+        msg="Successfully obtain admin tokens",
         data={
             "access_token": generate_access_token(admin.id, ACCOUNT_TYPE_ADMIN),
             "refresh_token": generate_refresh_token(admin.id, ACCOUNT_TYPE_ADMIN)
@@ -153,7 +155,8 @@ def refresh_jwt_token(request: HttpRequest):
             raise jwt.ExpiredSignatureError
         
         return success_api_response(
-            {
+            msg="Successfully refresh tokens",
+            data={
                 "access_token": generate_access_token(
                     token.get("id"),
                     token.get("account_type")
