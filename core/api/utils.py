@@ -36,7 +36,7 @@ def failed_api_responce(status_code, error_msg=None) -> dict:
         data={}
     )
 
-def success_api_response(msg: str, data: dict) -> dict:
+def success_api_response(msg: str, data: dict={}) -> dict:
     return api_responce(
         code=StatusCode.SUCCESS.value,
         msg=msg,
@@ -47,7 +47,7 @@ def response_wrapper(func):
     def inner(*args, **kwargs):
         response = func(*args, **kwargs)
         if isinstance(response, dict):
-            response = JsonResponse(response["data"])
+            response = JsonResponse(response)
         return response
     return inner
 
@@ -55,6 +55,8 @@ def failed_parse_data_response():
     return failed_api_responce(StatusCode.BAD_REQUEST, "Parse Data Error")
 
 def parse_data(request: HttpRequest):
+    """POST Request parse data from request.body
+    """
     try:
         return json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
