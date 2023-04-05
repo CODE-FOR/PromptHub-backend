@@ -61,3 +61,9 @@ def parse_data(request: HttpRequest):
         return json.loads(request.body.decode("utf-8"))
     except json.JSONDecodeError:
         return None
+
+def check_data(*args):
+    for arg in args:
+        if arg is None:
+            return False
+    return True
