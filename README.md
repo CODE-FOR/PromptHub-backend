@@ -17,3 +17,9 @@ $ python manage.py migrate
 ```shell
 $ python manage.py runserver
 ```
+
+* ruff check and fix
+
+```
+ruff check . --fix
+```
