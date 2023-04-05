@@ -1,7 +1,7 @@
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
 from core.models.user import User
-from .utils import response_wrapper, success_api_response, failed_api_responce
+from .utils import response_wrapper, success_api_response
 
 from .auth import admin_jwt_auth
 

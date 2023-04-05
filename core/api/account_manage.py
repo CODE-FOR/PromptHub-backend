@@ -1,4 +1,4 @@
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 

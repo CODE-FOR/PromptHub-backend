@@ -1,4 +1,3 @@
-import json
 import jwt
 from datetime import timedelta, datetime
 
@@ -28,7 +27,8 @@ def auth_failed(message: str):
     return failed_api_responce(StatusCode.UNAUTHORIZED, message)
 
 
-def generate_access_token(id: int, account_type: str, access_token_delta: int = 1) -> str:
+def generate_access_token(id: int, account_type: str, 
+access_token_delta: int = 1) -> str:
     """
     account can use access_token to login
     Args:
