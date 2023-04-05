@@ -33,17 +33,13 @@
 * width
 * height
 * uploader
+* created_at
+* prompt_attribute
 * upload_status：上传状态
     * 已经上架
     * 审核中
     * 下架中
 * is_delete：safe delete
-* tag
-
-### 标签 tag
-
-* tag
-* prompt
 
 ### 通知 notification
 

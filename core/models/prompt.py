@@ -23,9 +23,10 @@ class Prompt(models.Model):
     model = models.CharField(max_length=256)
     width = models.IntegerField()
     height = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
     uploader = models.ForeignKey(User, on_delete=models.CASCADE, related_name="prompts")
     upload_status = models.IntegerField(choices=UPLOAD_STATUS_CHOICES)
+    prompt_attribute = models.CharField(max_length=4096)
     is_delete = models.BooleanField(default=False)
-    tag = models.ManyToManyField(to="Tag", related_name="prompt_list") # Can not use Tag Object due to circular import
 
 

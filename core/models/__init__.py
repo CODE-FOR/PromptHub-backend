@@ -8,5 +8,4 @@ from .comment import Comment
 from .history import History
 from .notification import Notification
 from .prompt import Prompt
-from .tag import Tag
 from .user import User
