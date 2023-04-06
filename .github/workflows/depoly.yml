@@ -1,13 +1,13 @@
 name: Backend Deploy CD
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 jobs:
   deploy:
     runs-on: ubuntu-20.04
     steps:
       - name: Depoly to Ali Server
-      if: ${{ !env.ACT }}
+        if: ${{ !env.ACT }}
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.LIVE_SERVER_IP }}
