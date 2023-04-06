@@ -17,5 +17,5 @@ jobs:
           script: |
             docker attach ${{ secrets.CONTAINER_NAME }}
             cd ${{ secrets.PROJECT_PATH }}
-            git pull https://github.com/CODE-FOR/PromptHub-backend.git
+            git pull origin main
             
