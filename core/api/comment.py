@@ -4,7 +4,6 @@ from django.core.paginator import Paginator
 
 from core.models.comment import Comment
 from core.models.prompt import Prompt
-from core.models.user import User
 
 from .auth import user_jwt_auth
 from .utils import StatusCode, response_wrapper, success_api_response, failed_api_responce, \
