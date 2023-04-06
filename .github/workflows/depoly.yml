@@ -16,6 +16,6 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT }}
           script: |
             docker attach ${{ secrets.CONTAINER_NAME }}
-            cd ${{ secrets.PROJECT_PATH }}
+            cd /SE/backend
             git pull origin main
             
