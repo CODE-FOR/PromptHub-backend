@@ -7,8 +7,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Depoly to Ali Server
-        if: ${{ !env.ACT }}
-        uses: appleboy/ssh-action@master
+        uses: garygrossgarten/github-action-ssh@release
         with:
           host: ${{ secrets.LIVE_SERVER_IP }}
           username: ${{ secrets.SERVER_USERNAME }}
