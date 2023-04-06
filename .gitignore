@@ -7,3 +7,6 @@ migrations/
 db.sqlite3
 
 .idea
+
+# this is lzw's virtualenv dir, do not delete it
+back/
