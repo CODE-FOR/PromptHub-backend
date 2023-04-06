@@ -84,14 +84,14 @@ def user_obtain_jwt_token(request: HttpRequest):
     password = data.get("password")
     
     if not User.objects.filter(email=email, is_banned=False, is_delete=False).exists():
-        return auth_failed("Account does not exist or Account has been banned")
+        return auth_failed("账户不存在或者账户被禁")
     user = User.objects.get(email=email)
         
     if user.password != password:
-        return auth_failed("Wrong Password")
+        return auth_failed("密码错误")
     
     return success_api_response(
-        msg="Successfully obtain user tokens",
+        msg="成功登录",
         data={
             "access_token": generate_access_token(user.id, ACCOUNT_TYPE_USER),
             "refresh_token": generate_refresh_token(user.id, ACCOUNT_TYPE_USER)
@@ -109,14 +109,14 @@ def admin_obtain_jwt_token(request: HttpRequest):
     password = data.get("password")
 
     if not Admin.objects.filter(username=username).exists():
-        return auth_failed("Account does not exist")
+        return auth_failed("账户不存在")
     admin = Admin.objects.get(username=username)
 
     if admin.password != password:
-        return auth_failed("Wrong Password")
+        return auth_failed("密码错误")
     
     return success_api_response(
-        msg="Successfully obtain admin tokens",
+        msg="成功登录",
         data={
             "access_token": generate_access_token(admin.id, ACCOUNT_TYPE_ADMIN),
             "refresh_token": generate_refresh_token(admin.id, ACCOUNT_TYPE_ADMIN)
@@ -155,7 +155,7 @@ def refresh_jwt_token(request: HttpRequest):
             raise jwt.ExpiredSignatureError
         
         return success_api_response(
-            msg="Successfully refresh tokens",
+            msg="成功更新token",
             data={
                 "access_token": generate_access_token(
                     token.get("id"),
@@ -165,9 +165,9 @@ def refresh_jwt_token(request: HttpRequest):
         )
                 
     except jwt.ExpiredSignatureError:
-        return auth_failed("Token Expired")
+        return auth_failed("token过期")
     except jwt.InvalidTokenError:
-        return auth_failed("Invalid Token")
+        return auth_failed("token不合法")
 
 def verify_jwt_token(request: HttpRequest):
     """
@@ -199,9 +199,9 @@ def verify_jwt_token(request: HttpRequest):
         
         return (token.get("id"), None, token.get("account_type"))
     except jwt.ExpiredSignatureError:
-        return (-1, "Token Expired", None)
+        return (-1, "token过期", None)
     except jwt.InvalidTokenError:
-        return (-1, "Invalid Token", None)
+        return (-1, "token不合法", None)
 
 def user_jwt_auth():
     def decorator(func):
@@ -212,10 +212,10 @@ def user_jwt_auth():
                 return auth_failed(message)
             
             if account_type != ACCOUNT_TYPE_USER:
-                return auth_failed("Account has no permission")
+                return auth_failed("账户权限不足")
             
             if not User.objects.filter(pk=id, is_banned=False, is_delete=False).exists():
-                return auth_failed("Account does not exist Or Account has been banned")
+                return auth_failed("账户不存在或者账户被禁")
             user = User.objects.get(pk=id, is_banned=False, is_delete=False)
 
             request.user = user
@@ -232,10 +232,10 @@ def admin_jwt_auth():
                 return auth_failed(message)
             
             if account_type != ACCOUNT_TYPE_ADMIN:
-                return auth_failed("Account has no permission")
+                return auth_failed("账户权限不足")
             
             if not Admin.objects.filter(pk=id).exists():
-                return auth_failed("Account does not exist")
+                return auth_failed("账户不存在")
             admin = Admin.objects.get(pk=id)
 
             request.user = admin
