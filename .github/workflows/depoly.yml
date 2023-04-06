@@ -15,7 +15,5 @@ jobs:
           password: ${{ secrets.SERVER_USER_PASSWORD }}
           port: ${{ secrets.DEPLOY_PORT }}
           script: |
-            docker attach backend
-            cd /SE/backend
-            git pull origin main
+            docker exec backend "cd /SE/backend;git pull origin main"
             
