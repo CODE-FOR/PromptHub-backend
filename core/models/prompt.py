@@ -29,4 +29,27 @@ class Prompt(models.Model):
     prompt_attribute = models.CharField(max_length=4096)
     is_delete = models.BooleanField(default=False)
 
+    def simple_dict(self):
+        data = {
+            "id": self.id,
+            "picture": self.picture
+        }
+        return data
+
+    def full_dict(self):
+        data = {
+            "id": self.id,
+            "prompt": self.prompt,
+            "picture": self.picture,
+            "model": self.model,
+            "width": self.width,
+            "height": self.height,
+            "created_at": self.created_at,
+            "uploader": self.uploader.simple_dict(),
+            "upload_status": self.upload_status,
+            "prompt_attribute": self.prompt_attribute
+        }
+        return data
+
+
 

@@ -19,6 +19,7 @@ class User(models.Model):
     
     avatar = models.URLField(default=DEFAULT_AVATAR)
     followers = models.ManyToManyField("User")
+    following = models.ManyToManyField("User")
     is_confirmed = models.BooleanField(default=False)
     is_banned = models.BooleanField(default=False)
     is_delete = models.BooleanField(default=False)
