@@ -5,7 +5,7 @@ from django.core.paginator import Paginator
 from core.models.comment import Comment
 from core.models.prompt import Prompt
 
-from .auth import user_jwt_auth
+from .auth import user_jwt_auth, get_user_from_token
 from .utils import StatusCode, response_wrapper, success_api_response, failed_api_response, \
                    parse_data, failed_parse_data_response
 
@@ -68,7 +68,9 @@ def get_comment_list(request: HttpRequest):
     if not data:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
-    user_id = data.get("user_id")
+    user = get_user_from_token(request)
+    user_id = -1 if user is None else user.id
+
     prompt_id = data.get("prompt_id")
     page_size = data.get("page_size", 30)
     page_index = data.get("page_index", 1)
