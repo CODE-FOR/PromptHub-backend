@@ -2,10 +2,13 @@ from django.db import models
 from .user import User
 
 
+LANCHED = 0
+UNDER_REVIEW = 1
+TAKEN_DOWN = 2
 UPLOAD_STATUS_CHOICES = (
-    (0, "LANCHED"),
-    (1, "UNDER_REVIEW"),
-    (2, "TAKEN_DOWN")
+    (LANCHED, "LANCHED"),
+    (UNDER_REVIEW, "UNDER_REVIEW"),
+    (TAKEN_DOWN, "TAKEN_DOWN")
 )
 
 
@@ -32,6 +35,7 @@ class Prompt(models.Model):
     def simple_dict(self):
         data = {
             "id": self.id,
+            "prompt": self.prompt,
             "picture": self.picture
         }
         return data
@@ -51,5 +55,16 @@ class Prompt(models.Model):
         }
         return data
 
+    def review_list_dict(self):
+        data = {
+            "id": self.id,
+            "prompt": self.prompt,
+            "picture": self.picture,
+            "uploader": self.uploader.mangage_dict(),
+            "upload_status": self.upload_status
+        }
+        return data
 
-
+    def be_lanched(self):
+        self.upload_status = LANCHED
+        self.save()

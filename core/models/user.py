@@ -35,6 +35,15 @@ class User(models.Model):
             data["avatar"] = DEFAULT_AVATAR
         return data
 
+    def mangage_dict(self):
+        data = {
+            "id": self.id,
+            "nickname": self.nickname,
+            "avater": self.avatar,
+            "is_banned": self.is_banned
+        }
+        return data
+
     def check_password(self, password):
         return self.password == password
 

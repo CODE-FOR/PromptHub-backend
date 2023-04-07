@@ -1,7 +1,8 @@
 from django.db import models
 from .user import User
 
-
+READ = 0
+UNREAD = 1
 READ_STATUS_CHOICES = (
     (0, "READ"),
     (1, "UNREAD")
