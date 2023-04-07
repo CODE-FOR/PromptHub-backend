@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
 
-from .utils import StatusCode, failed_api_responce, success_api_response, \
+from .utils import StatusCode, failed_api_response, success_api_response, \
                    response_wrapper, failed_parse_data_response, parse_data
 
 from core.models.admin import Admin
@@ -24,7 +24,7 @@ def str_to_datetime(time: str) -> datetime:
 
 
 def auth_failed(message: str):
-    return failed_api_responce(StatusCode.UNAUTHORIZED, message)
+    return failed_api_response(StatusCode.UNAUTHORIZED, message)
 
 
 def generate_access_token(id: int, account_type: str, 

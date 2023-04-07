@@ -24,7 +24,7 @@ def api_responce(code: int, msg: str, data: dict) -> dict:
         "data": data
     }
 
-def failed_api_responce(status_code, error_msg) -> dict:
+def failed_api_response(status_code, error_msg) -> dict:
     return api_responce(
         code=status_code.value,
         msg=error_msg,
@@ -47,7 +47,7 @@ def response_wrapper(func):
     return inner
 
 def failed_parse_data_response():
-    return failed_api_responce(StatusCode.BAD_REQUEST, "参数解析错误")
+    return failed_api_response(StatusCode.BAD_REQUEST, "参数解析错误")
 
 def parse_data(request: HttpRequest):
     """POST Request parse data from request.body
