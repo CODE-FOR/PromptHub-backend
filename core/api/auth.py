@@ -203,6 +203,17 @@ def verify_jwt_token(request: HttpRequest):
     except jwt.InvalidTokenError:
         return (-1, "token不合法", None)
 
+def get_user_from_token(request: HttpRequest):
+    id, _, account_type = verify_jwt_token(request)
+    
+    if id == -1 or account_type != ACCOUNT_TYPE_USER:
+        return None
+    
+    if not User.objects.filter(pk=id, is_banned=False, is_delete=False).exists():
+        return None
+    
+    return User.objects.get(pk=id, is_banned=False, is_delete=False)
+
 def user_jwt_auth():
     def decorator(func):
         def wrapper(request: HttpRequest, *args, **kwargs):
