@@ -30,7 +30,6 @@ class Prompt(models.Model):
     uploader = models.ForeignKey(User, on_delete=models.CASCADE, related_name="prompts")
     upload_status = models.IntegerField(choices=UPLOAD_STATUS_CHOICES)
     prompt_attribute = models.CharField(max_length=4096)
-    is_delete = models.BooleanField(default=False)
 
     def simple_dict(self):
         data = {

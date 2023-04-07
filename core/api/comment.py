@@ -58,7 +58,7 @@ def delete_comment(request: HttpRequest):
 
     if user.id != comment.user.id:
         return failed_api_response(StatusCode.BAD_REQUEST, "该用户无权限删除此评论")
-    comment.safe_delete()
+    comment.delete()
     return success_api_response(msg="成功删除评论")
 
 @response_wrapper

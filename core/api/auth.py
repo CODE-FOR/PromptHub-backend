@@ -83,7 +83,7 @@ def user_obtain_jwt_token(request: HttpRequest):
     email = data.get("email")
     password = data.get("password")
     
-    if not User.objects.filter(email=email, is_banned=False, is_delete=False).exists():
+    if not User.objects.filter(email=email, is_banned=False).exists():
         return auth_failed("账户不存在或者账户被禁")
     user = User.objects.get(email=email)
         
@@ -209,10 +209,10 @@ def get_user_from_token(request: HttpRequest):
     if id == -1 or account_type != ACCOUNT_TYPE_USER:
         return None
     
-    if not User.objects.filter(pk=id, is_banned=False, is_delete=False).exists():
+    if not User.objects.filter(pk=id, is_banned=False).exists():
         return None
     
-    return User.objects.get(pk=id, is_banned=False, is_delete=False)
+    return User.objects.get(pk=id, is_banned=False)
 
 def user_jwt_auth():
     def decorator(func):
@@ -225,9 +225,9 @@ def user_jwt_auth():
             if account_type != ACCOUNT_TYPE_USER:
                 return auth_failed("账户权限不足")
             
-            if not User.objects.filter(pk=id, is_banned=False, is_delete=False).exists():
+            if not User.objects.filter(pk=id, is_banned=False).exists():
                 return auth_failed("账户不存在或者账户被禁")
-            user = User.objects.get(pk=id, is_banned=False, is_delete=False)
+            user = User.objects.get(pk=id, is_banned=False)
 
             request.user = user
             return func(request, *args, **kwargs)

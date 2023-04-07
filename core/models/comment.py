@@ -10,14 +10,12 @@ class Comment(models.Model):
         created_at:
         content:
         parent_comment:
-        is_delete:
     """
     prompt = models.ForeignKey(Prompt, on_delete=models.CASCADE, related_name="comment_list")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
     created_at = models.DateTimeField(auto_now_add=True)
     content = models.CharField(max_length=4096)
     parent_comment = models.ForeignKey("self", null=True, blank=True, on_delete=models.CASCADE)
-    is_delete = models.BooleanField(default=False)
     
     def simple_dict(self, **kwargs):
         data = {
@@ -28,12 +26,9 @@ class Comment(models.Model):
             "prompt_id": self.prompt.id
         }
 
-        if self.is_delete:
-            data["content"] = "该评论已被删除"
-        else:
-            user_id = kwargs.get("user_id", None)
-            if user_id:
-                data["belong_to"] = user_id == self.user.id
+        user_id = kwargs.get("user_id", None)
+        if user_id:
+            data["belong_to"] = user_id == self.user.id
         return data
     
     def full_dict(self, **kwargs):
@@ -41,7 +36,3 @@ class Comment(models.Model):
         if self.parent_comment:
             data["parent_comment"] = self.parent_comment.simple_dict()
         return data
-    
-    def safe_delete(self):
-        self.is_delete = True
-        self.save()

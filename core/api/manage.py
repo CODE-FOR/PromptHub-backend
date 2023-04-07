@@ -255,6 +255,5 @@ def delete_comment(request: HttpRequest):
         return failed_api_responce(StatusCode.ID_NOT_EXISTS, "评论不存在")
     comment = Comment.objects.get(id=comment_id)
      
-    # TODO: change safe delete
-    comment.safe_delete()
+    comment.delete()
     return success_api_response(msg="成功删除评论")

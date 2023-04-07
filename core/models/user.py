@@ -22,7 +22,6 @@ class User(models.Model):
     following = models.ManyToManyField("User")
     is_confirmed = models.BooleanField(default=False)
     is_banned = models.BooleanField(default=False)
-    is_delete = models.BooleanField(default=False)
 
     def simple_dict(self):
         data = {
@@ -30,9 +29,6 @@ class User(models.Model):
             "nickname": self.nickname,
             "avatar": self.avatar
         }
-        if self.is_delete:
-            data["nickname"] = "Unknown"
-            data["avatar"] = DEFAULT_AVATAR
         return data
 
     def mangage_dict(self):
