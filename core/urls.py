@@ -11,7 +11,7 @@ from core.api.account_manage import sign_up, confirm_and_create, forget_password
 from core.api.prompt import create_prompt, edit_prompt, delete_prompt, get_prompt
 from core.api.comment import create_comment, delete_comment, get_comment_list
 from core.api.collections import add_to_collection, create_collection, \
-    delete_collection, mod_collection, remove_from_collection
+    delete_collection, mod_collection, remove_from_collection,get_collection_list,get_collection_record_list
 
 urlpatterns = [
     # auth apis
@@ -49,8 +49,9 @@ urlpatterns = [
     path("collection/create_collection", create_collection),
     path("collection/delete_collection", delete_collection),
     path("collection/modify_collection", mod_collection),
+    path("collection/get_collection_list", get_collection_list),
     # collection apis —— for item
     path("collection/add_to_collection", add_to_collection),
-    path("collection/remove_from_collection", remove_from_collection)
-
+    path("collection/remove_from_collection", remove_from_collection),
+    path("collection/get_collection_record_list", get_collection_record_list)
 ]
