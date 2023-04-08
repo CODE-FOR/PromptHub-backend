@@ -4,7 +4,6 @@ url routes of core apis
 
 from django.urls import path
 
-from core.api.admin import get_all_users
 from core.api.auth import user_obtain_jwt_token, admin_obtain_jwt_token, refresh_jwt_token
 from core.api.account_manage import sign_up, confirm_and_create, forget_password, confirm_forget_password, \
     change_password
@@ -26,7 +25,6 @@ urlpatterns = [
     path("user/change_password", change_password),
 
     # admin apis
-    path("admin/get_all_users", get_all_users),
 
     # comment apis
     path("comment/create_comment", create_comment),

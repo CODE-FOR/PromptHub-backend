@@ -19,13 +19,14 @@ class AuditRecord(models.Model):
     feedback = models.CharField(max_length=4096)
 
     def to_dict(self):
-        {
+        data = {
             "user": self.user.simple_dict(),
             "prompt": self.prompt.simple_dict(),
             "created_at": self.created_at,
             "status": self.status,
             "feedback": self.feedback
         }
+        return data
 
     def be_passed(self):
         self.status = PASSED

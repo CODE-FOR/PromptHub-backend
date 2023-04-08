@@ -9,7 +9,7 @@ from core.models.notification import Notification, UNREAD
 from core.models.comment import Comment
 
 from .auth import admin_jwt_auth
-from .utils import StatusCode, response_wrapper, success_api_response, failed_api_responce, \
+from .utils import StatusCode, response_wrapper, success_api_response, failed_api_response, \
                    parse_data, failed_parse_data_response
 
 @response_wrapper
@@ -25,7 +25,7 @@ def get_user_list(request: HttpRequest):
 
     data = request.GET.dict()
     if not data:
-        return failed_api_responce(StatusCode.BAD_REQUEST, "参数错误")
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
     page_size = data.get("page_size", 30)
     page_index = data.get("page_index", 1)
@@ -62,7 +62,7 @@ def get_prompt_list(request: HttpRequest):
 
     data = request.GET.dict()
     if not data:
-        return failed_api_responce(StatusCode.BAD_REQUEST, "参数错误")
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
 
     page_size = data.get("page_size", 30)
     page_index = data.get("page_index", 1)
@@ -132,11 +132,11 @@ def pass_prompt(request: HttpRequest):
 
     data = parse_data(request)
     if not data:
-        return failed_api_responce(StatusCode.BAD_REQUEST, "参数错误")
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
     id = data.get("id")
     if id is None:
-        return failed_api_responce(StatusCode.BAD_REQUEST, "参数错误")
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
 
     audit_record = AuditRecord.objects.get(id=id)
     prompt = audit_record.prompt
@@ -173,12 +173,12 @@ def take_down_prompt(request: HttpRequest):
 
     data = parse_data(request)
     if not data:
-        return failed_api_responce(StatusCode.BAD_REQUEST, "参数错误")
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
     id = data.get("id")
     reject_reason = data.get("reject_reason", None)
     if id is None:
-        return failed_api_responce(StatusCode.BAD_REQUEST, "参数错误")
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
 
     audit_record = AuditRecord.objects.get(id=id)
     prompt = audit_record.prompt
@@ -214,16 +214,16 @@ def get_comment_list(request: HttpRequest):
     """
     data = request.GET.dict()
     if not data:
-        return failed_api_responce(StatusCode.BAD_REQUEST, "参数错误")
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
     prompt_id = data.get("prompt_id")
     page_size = data.get("page_size", 30)
     page_index = data.get("page_index", 1)
     if prompt_id is None:
-        return failed_api_responce(StatusCode.BAD_REQUEST, "参数错误")
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
     if not Prompt.objects.filter(id=prompt_id).exists():
-        return failed_api_responce(StatusCode.BAD_REQUEST, "作品不存在")
+        return failed_api_response(StatusCode.BAD_REQUEST, "作品不存在")
     
     prompt = Prompt.objects.get(id=prompt_id)
 
@@ -252,7 +252,7 @@ def delete_comment(request: HttpRequest):
 
     comment_id = data.get("comment_id")
     if not Comment.objects.filter(id=comment_id).exists():
-        return failed_api_responce(StatusCode.ID_NOT_EXISTS, "评论不存在")
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, "评论不存在")
     comment = Comment.objects.get(id=comment_id)
      
     comment.delete()
