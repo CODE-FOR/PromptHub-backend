@@ -47,7 +47,11 @@ def get_notification_list(request: HttpRequest):
     return success_api_response(
         msg="成功获得通知",
         data={
-            "notification_list": notification_list
+            "notification_list": notification_list,
+            "has_next": page_notification.has_next(),
+            "has_previous": page_notification.has_previous(),
+            "page_index": page_index,
+            "page_total": paginator.num_pages
         }
     )
 

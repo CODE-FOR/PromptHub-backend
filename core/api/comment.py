@@ -107,7 +107,10 @@ def get_comment_list(request: HttpRequest):
         msg="成功获得评论列表",
         data={
             "comment_list": comment_list,
-            "per_page": paginator.num_pages
+            "has_next": page_comments.has_next(),
+            "has_previous": page_comments.has_previous(),
+            "page_index": page_index,
+            "page_total": paginator.num_pages
         }
     )
         

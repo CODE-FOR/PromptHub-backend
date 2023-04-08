@@ -4,7 +4,7 @@ from django.views.decorators.http import require_http_methods
 from .utils import response_wrapper, parse_data, failed_parse_data_response, check_data, failed_api_response, \
     StatusCode, success_api_response
 from .auth import user_jwt_auth, get_user_from_token
-from core.models.collection import Collection, CollectRecord, Prompt
+from core.models.collection import Collection, CollectRecord, Prompt, PUBLIC, PRIVATE
 from django.core.paginator import Paginator
 
 '''
@@ -155,6 +155,7 @@ def get_collection_list(request: HttpRequest):
     user = get_user_from_token(request)
     user_id = -1 if user is None else user.id
     fetch_user_id = data.get("fetch_user_id")
+
     if fetch_user_id is None:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整, 缺少fetch_user_id")
     per_page = data.get("per_page", 30)
@@ -162,12 +163,12 @@ def get_collection_list(request: HttpRequest):
 
     collection_list = []
     if user_id == fetch_user_id:
-        collection_list.extend(Collection.objects.filter(user=user))
+        collection_list.extend(Collection.objects.filter(user_id=fetch_user_id))
     else:
-        collection_list.extend(Collection.objects.filter(user=user, visibility=1))
+        collection_list.extend(Collection.objects.filter(user_id=fetch_user_id, visibility=PUBLIC))
 
     collection_list_view = []
-    paginator = Paginator(collection_list,per_page)
+    paginator = Paginator(collection_list, per_page)
     page_collections = paginator.page(page_index)
     for collection in page_collections.object_list:
         collection_list_view.append(collection.full_dict())
@@ -175,7 +176,10 @@ def get_collection_list(request: HttpRequest):
         msg="成功获取收藏列表",
         data={
             "collection_list": collection_list_view,
-            "per_page": paginator.num_pages
+            "has_next": page_collections.has_next(),
+            "has_previous": page_collections.has_previous(),
+            "page_index": page_index,
+            "page_total": paginator.num_pages
         }
     )
 
@@ -188,6 +192,8 @@ def get_collection_record_list(request: HttpRequest):
         return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
 
     user = get_user_from_token(request)
+    user_id = -1 if user is None else user.id
+    
     collection_id = data.get("id")
     per_page = data.get("per_page", 30)
     page_index = data.get("page_index", 1)
@@ -196,18 +202,23 @@ def get_collection_record_list(request: HttpRequest):
     if collection_id is None:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
     collection = Collection.objects.get(id=collection_id)
-    if collection is None or (collection.visibility == 0 and collection.user.id != user.id):
+    if collection is None or (collection.visibility == PRIVATE and collection.user.id != user_id):
         return failed_api_response(StatusCode.ID_NOT_EXISTS, "无此收藏夹或者不允许访问")
 
-    collection_records = CollectRecord.objects.filter(id=collection_id)
+    collection_records = CollectRecord.objects.filter(collection_id=collection_id)
     paginator = Paginator(collection_records, per_page)
     page_records = paginator.page(page_index)
 
     for record in page_records:
         collection_records_view.append(record.full_dict())
 
-    return success_api_response(msg="成功",
-                                data={
-                                    "collection_record_list": collection_records_view,
-                                    "per_page": paginator.num_pages
-                                })
+    return success_api_response(
+        msg="成功",
+        data={
+            "collection_record_list": collection_records_view,
+            "has_next": page_records.has_next(),
+            "has_previous": page_records.has_previous(),
+            "page_index": page_index,
+            "page_total": paginator.num_pages
+        }
+    )

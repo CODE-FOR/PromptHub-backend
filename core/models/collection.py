@@ -2,9 +2,11 @@ from django.db import models
 from .prompt import Prompt
 from .user import User
 
+PUBLIC = 0
+PRIVATE = 1
 VISIBILITY_STATUS_CHOICES = (
-    (0, "PUBLIC"),
-    (1, "PRIVATE")
+    (PUBLIC, "PUBLIC"),
+    (PRIVATE, "PRIVATE")
 )
 
 

@@ -29,7 +29,11 @@ def get_history_list(request: HttpRequest):
     return success_api_response(
         msg="成功获得历史记录",
         data={
-            "history_list": history_list
+            "history_list": history_list,
+            "has_next": page_history.has_next(),
+            "has_previous": page_history.has_previous(),
+            "page_index": page_index,
+            "page_total": paginator.num_pages
         }
     )
 
