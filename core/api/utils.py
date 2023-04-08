@@ -41,8 +41,9 @@ def success_api_response(msg: str, data: dict={}) -> dict:
 def response_wrapper(func):
     def inner(*args, **kwargs):
         response = func(*args, **kwargs)
+        '''reconstruct response'''
         if isinstance(response, dict):
-            response = JsonResponse(response)
+            response = JsonResponse(response["data"], status=response["code"])
         return response
     return inner
 
