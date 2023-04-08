@@ -18,8 +18,8 @@ class User(models.Model):
     nickname = models.CharField(max_length=256)
     
     avatar = models.URLField(default=DEFAULT_AVATAR)
-    followers = models.ManyToManyField("User")
-    following = models.ManyToManyField("User")
+    followers = models.ManyToManyField("User", related_name="followers")
+    following = models.ManyToManyField("User", related_name="following")
     is_confirmed = models.BooleanField(default=False)
     is_banned = models.BooleanField(default=False)
 
