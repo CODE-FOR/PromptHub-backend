@@ -3,9 +3,9 @@ from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 
 from core.models.user import User
-from core.models.prompt import Prompt, LANCHED, UNDER_REVIEW, TAKEN_DOWN
-from core.models.audit_record import AuditRecord, PASSED, REJECTED, IN_PROGRESS
-from core.models.notification import Notification, READ, UNREAD
+from core.models.prompt import Prompt
+from core.models.audit_record import AuditRecord, IN_PROGRESS
+from core.models.notification import Notification, UNREAD
 from core.models.comment import Comment
 
 from .auth import admin_jwt_auth
