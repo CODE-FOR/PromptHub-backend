@@ -31,7 +31,7 @@ class User(models.Model):
         }
         return data
 
-    def mangage_dict(self):
+    def manage_dict(self):
         data = {
             "id": self.id,
             "nickname": self.nickname,

@@ -17,11 +17,11 @@ def get_history_list(request: HttpRequest):
         return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
     user = request.user
-    page_size = data.get("page_size", 30)
+    per_page = data.get("per_page", 30)
     page_index = data.get("page_index", 1)
     histories = user.history_list.all().order_by("-created_at")
 
-    paginator = Paginator(histories, page_size)
+    paginator = Paginator(histories, per_page)
     page_history = paginator.page(page_index)
 
     history_list = []

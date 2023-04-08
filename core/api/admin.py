@@ -2,10 +2,11 @@ from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 
+from core.api.notification import new_system_notification
+
 from core.models.user import User
 from core.models.prompt import Prompt
-from core.models.audit_record import AuditRecord, IN_PROGRESS
-from core.models.notification import Notification, UNREAD
+from core.models.audit_record import AuditRecord
 from core.models.comment import Comment
 
 from .auth import admin_jwt_auth
@@ -19,19 +20,15 @@ def get_user_list(request: HttpRequest):
     """
     :param request:
         page_index: page index, default 1
-        page_size: user num per page, default 30
-        sort_by: future feature
+        per_page: user num per page, default 30
     """
 
     data = request.GET.dict()
-    if not data:
-        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
-    page_size = data.get("page_size", 30)
+    per_page = data.get("per_page", 30)
     page_index = data.get("page_index", 1)
 
-    # TODO: sort user
-    paginator = Paginator(User.objects.all(), page_size)
+    paginator = Paginator(User.objects.all().order_by("id"), per_page)
     page_user = paginator.page(page_index)
 
     user_list = []
@@ -44,7 +41,8 @@ def get_user_list(request: HttpRequest):
             "user_list": user_list,
             "has_next": page_user.has_next(),
             "has_previous": page_user.has_previous(),
-            "page_num": paginator.num_pages
+            "page_index": page_index,
+            "page_total": paginator.num_pages
         }
     )
 
@@ -57,23 +55,18 @@ def get_prompt_list(request: HttpRequest):
     :param request:
         page_index: page index, default 1
         per_page: user num per page, default 30
-        sort_by: future feature
     """
-
     data = request.GET.dict()
-    if not data:
-        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
 
-    page_size = data.get("page_size", 30)
+    per_page = data.get("per_page", 30)
     page_index = data.get("page_index", 1)
 
-    # TODO: sort prompt
-    paginator = Paginator(Prompt.objects.all(), page_size)
+    paginator = Paginator(Prompt.objects.all().order_by("-id"), per_page)
     page_prompt = paginator.page(page_index)
 
     prompt_list = []
     for prompt in page_prompt.object_list:
-        prompt_list.append(prompt.simple_dict())
+        prompt_list.append(prompt.full_dict())
     
     return success_api_response(
         msg="成功获取Prompt",
@@ -81,7 +74,8 @@ def get_prompt_list(request: HttpRequest):
             "prompt_list": prompt_list,
             "has_next": page_prompt.has_next(),
             "has_previous": page_prompt.has_previous(),
-            "page_num": paginator.num_pages
+            "page_index": page_index,
+            "page_total": paginator.num_pages
         }
     )
 
@@ -94,21 +88,23 @@ def get_audit_record_list(request: HttpRequest):
     :param request:
         page_index: page index, default 1
         per_page: user num per page, default 30
-        sort_by: future feature
+        status: 
     """
 
     data = request.GET.dict()
 
-    page_size = data.get("page_size", 30)
+    per_page = data.get("per_page", 30)
     page_index = data.get("page_index", 1)
+    status = data.get("status", None)
 
-    # TODO: sort prompt
-    paginator = Paginator(AuditRecord.objects.filter(status=IN_PROGRESS), page_size)
+    paginator = Paginator(AuditRecord.objects.filter(status=status).order_by("-id"), per_page) \
+                if status is not None else \
+                Paginator(AuditRecord.objects.all().order_by("-id"), per_page)
     page_audit_record = paginator.page(page_index)
 
     audit_record_list = []
     for audit_record in page_audit_record.object_list:
-        audit_record_list.append(audit_record.review_list_dict())
+        audit_record_list.append(audit_record.to_dict())
     
     return success_api_response(
         msg="成功获取待审核Prompt",
@@ -116,7 +112,8 @@ def get_audit_record_list(request: HttpRequest):
             "prompt_list": audit_record_list,
             "has_next": page_audit_record.has_next(),
             "has_previous": page_audit_record.has_previous(),
-            "page_num": paginator.num_pages
+            "page_index": page_index,
+            "page_total": paginator.num_pages
         }
     )
 
@@ -124,83 +121,45 @@ def get_audit_record_list(request: HttpRequest):
 @response_wrapper
 @admin_jwt_auth()
 @require_http_methods("POST")
-def pass_prompt(request: HttpRequest):
+def audit_prompt(request: HttpRequest):
     """
     :param request:
         id: audit record id
+        passed: bool
+        content: content
     """
-
     data = parse_data(request)
     if not data:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
     id = data.get("id")
-    if id is None:
+    passed = data.get("passed")
+    content = data.get("content", "")
+    if id is None or passed is None:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
 
     audit_record = AuditRecord.objects.get(id=id)
+    audit_record.feedback = content
+    audit_record.save()
     prompt = audit_record.prompt
 
-    prompt.be_lanched()
-    audit_record.be_passed()
+    if passed:
+        prompt.be_lanched()
+        audit_record.be_passed()
+    else:
+        audit_record.be_rejected()
 
     '''notify the uploader about upload status'''
     uploader = audit_record.user
-    Notification.objects.create(
-        user=uploader,
-        # TODO: change this msg
-        content=f"您的作品{prompt.id}审核通过",
-        status = UNREAD
-    )
+    new_system_notification(passed=passed, prompt_id=prompt.id, content=content, to_user=uploader)
 
     return success_api_response(
-        msg="审核通过",
+        msg="完成审核",
         data={
             "id": id,
             "uploader_id": uploader.id
         }
     )
-
-@response_wrapper
-@admin_jwt_auth()
-@require_http_methods("POST")
-def take_down_prompt(request: HttpRequest):
-    """
-    :param request:
-        id: audit record id
-        reject_reason: reject reason
-    """
-
-    data = parse_data(request)
-    if not data:
-        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
-    
-    id = data.get("id")
-    reject_reason = data.get("reject_reason", None)
-    if id is None:
-        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
-
-    audit_record = AuditRecord.objects.get(id=id)
-    prompt = audit_record.prompt
-
-    audit_record.be_rejected()
-
-    '''notify the uploader about upload status'''
-    uploader = prompt.uploader
-    Notification.objects.create(
-        user=uploader,
-        content=f"您的作品{id}由于{reject_reason}审核不通过，请修改后重新上传",
-        status = UNREAD
-    )
-
-    return success_api_response(
-        msg="审核不通过",
-        data={
-            "id": id,
-            "uploader_id": uploader.id
-        }
-    )
-
 
 @response_wrapper
 @admin_jwt_auth()
@@ -209,7 +168,7 @@ def get_comment_list(request: HttpRequest):
     """
     :param request:
         prompt_id: comments' prompt id
-        page_size: comments num per page
+        per_page: comments num per page
         page_index: page index
     """
     data = request.GET.dict()
@@ -217,7 +176,7 @@ def get_comment_list(request: HttpRequest):
         return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
     prompt_id = data.get("prompt_id")
-    page_size = data.get("page_size", 30)
+    per_page = data.get("per_page", 30)
     page_index = data.get("page_index", 1)
     if prompt_id is None:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
@@ -227,7 +186,7 @@ def get_comment_list(request: HttpRequest):
     
     prompt = Prompt.objects.get(id=prompt_id)
 
-    paginator = Paginator(prompt.comment_list.all(), page_size)
+    paginator = Paginator(prompt.comment_list.all().order_by("-created_at"), per_page)
     page_comments = paginator.page(page_index)
 
     comment_list = []
@@ -238,7 +197,7 @@ def get_comment_list(request: HttpRequest):
         msg="成功获得评论列表",
         data={
             "comment_list": comment_list,
-            "page_size": paginator.num_pages
+            "per_page": paginator.num_pages
         }
     )
 

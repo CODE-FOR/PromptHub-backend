@@ -72,7 +72,7 @@ def get_comment_list(request: HttpRequest):
     user_id = -1 if user is None else user.id
 
     prompt_id = data.get("prompt_id")
-    page_size = data.get("page_size", 30)
+    per_page = data.get("per_page", 30)
     page_index = data.get("page_index", 1)
     if prompt_id is None:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整, 缺少prompt_id")
@@ -81,7 +81,7 @@ def get_comment_list(request: HttpRequest):
         return failed_api_response(StatusCode.BAD_REQUEST, "作品不存在")
     prompt = Prompt.objects.get(id=prompt_id)
 
-    paginator = Paginator(prompt.comment_list.all(), page_size)
+    paginator = Paginator(prompt.comment_list.all(), per_page)
     page_comments = paginator.page(page_index)
 
     comment_list = []
@@ -92,7 +92,7 @@ def get_comment_list(request: HttpRequest):
         msg="成功获得评论列表",
         data={
             "comment_list": comment_list,
-            "page_size": paginator.num_pages
+            "per_page": paginator.num_pages
         }
     )
         
