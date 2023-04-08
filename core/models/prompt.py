@@ -27,13 +27,15 @@ class Prompt(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     uploader = models.ForeignKey(User, on_delete=models.CASCADE, related_name="prompts")
     upload_status = models.IntegerField(choices=UPLOAD_STATUS_CHOICES)
+    collection_count = models.IntegerField(default=0)
     prompt_attribute = models.CharField(max_length=4096)
 
     def simple_dict(self):
         data = {
             "id": self.id,
             "prompt": self.prompt,
-            "picture": self.picture
+            "picture": self.picture,
+            "collection_count": self.collection_count
         }
         return data
 
@@ -42,6 +44,7 @@ class Prompt(models.Model):
             "id": self.id,
             "prompt": self.prompt,
             "picture": self.picture,
+            "collection_count": self.collection_count,
             "model": self.model,
             "width": self.width,
             "height": self.height,

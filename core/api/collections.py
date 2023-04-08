@@ -32,6 +32,9 @@ def add_to_collection(request: HttpRequest):
         return failed_api_response(StatusCode.ID_NOT_EXISTS, "无法收藏，数据异常")
 
     CollectRecord.objects.create(prompt=prompt, collection=collection)
+    prompt.collection_count = prompt.collection_count + 1
+    prompt.save()
+
     return success_api_response(msg="成功添加至收藏夹")
 
 
@@ -51,8 +54,15 @@ def remove_from_collection(request: HttpRequest):
     if not check_data(id):
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
 
+    if not CollectRecord.objects.filter(id=id).exists():
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, "收藏记录不存在")
+    
     collectRecord = CollectRecord.objects.get(id=id)
+    prompt = collectRecord.prompt
+    prompt.collection_count = prompt.collection_count - 1
+    prompt.save()
     collectRecord.delete()
+    
     return success_api_response(msg="成功删除")
 
 
