@@ -2,6 +2,8 @@ from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 
+from core.api.notification import new_comment_notification, new_reply_notification
+
 from core.models.comment import Comment
 from core.models.prompt import Prompt
 
@@ -30,16 +32,29 @@ def create_comment(request: HttpRequest):
 
     if not Prompt.objects.filter(id=prompt_id).exists():
         return failed_api_response(StatusCode.ID_NOT_EXISTS, "作品不存在")
-    prompt = Prompt.objects.filter(id=prompt_id)
+    prompt = Prompt.objects.get(id=prompt_id)
 
     parent_comment = None
     if parent_comment_id is not None:
         if not Comment.objects.filter(id=parent_comment_id).exists():
             return failed_api_response(StatusCode.ID_NOT_EXISTS, "回复的评论不存在")
-        parent_comment = Comment.objects.filter(id=parent_comment_id)
+        parent_comment = Comment.objects.get(id=parent_comment_id)
+        to_user = parent_comment.user
+        if to_user != user:
+            new_reply_notification(username=user.nickname, prompt_id=prompt.id,
+                                   content=content, to_user=parent_comment.user)
+    else:
+        if user != prompt.uploader:
+            new_comment_notification(username=user.nickname, prompt_id=prompt.id,
+                                     content=content, to_user=prompt.uploader)
 
-    Comment.objects.create(prompt=prompt, user=user, content=content, parent_comment=parent_comment)
-    return success_api_response(msg="成功评论")
+    comment = Comment.objects.create(prompt=prompt, user=user, content=content, parent_comment=parent_comment)
+    return success_api_response(
+        msg="成功评论",
+        data={
+            "id": comment.id
+        }
+    )
 
 @response_wrapper
 @user_jwt_auth()
@@ -81,7 +96,7 @@ def get_comment_list(request: HttpRequest):
         return failed_api_response(StatusCode.BAD_REQUEST, "作品不存在")
     prompt = Prompt.objects.get(id=prompt_id)
 
-    paginator = Paginator(prompt.comment_list.all(), per_page)
+    paginator = Paginator(prompt.comment_list.all().order_by("created_at"), per_page)
     page_comments = paginator.page(page_index)
 
     comment_list = []

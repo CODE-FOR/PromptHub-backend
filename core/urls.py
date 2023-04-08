@@ -10,8 +10,11 @@ from core.api.account_manage import sign_up, confirm_and_create, forget_password
     change_password
 from core.api.prompt import create_prompt, edit_prompt, delete_prompt, get_prompt
 from core.api.comment import create_comment, delete_comment, get_comment_list
+from core.api.history import get_history_list, delete_history
 from core.api.collections import add_to_collection, create_collection, \
-    delete_collection, mod_collection, remove_from_collection,get_collection_list,get_collection_record_list
+    delete_collection, mod_collection, remove_from_collection, get_collection_list, get_collection_record_list
+from core.api.notification import get_notification_list, delete_notification, update_notification, \
+    get_unread_notification_num
 
 urlpatterns = [
     # auth apis
@@ -43,7 +46,11 @@ urlpatterns = [
     # comment apis
     path("comment/create_comment", create_comment),
     path("comment/delete_comment", delete_comment),
-    path("comment/get_comment_list/", get_comment_list),
+    path("comment/get_comment_list", get_comment_list),
+
+    # history apis
+    path("history/get_history_list", get_history_list),
+    path("history/delete_history", delete_history),
 
     # collections apis —— for collection bundle
     path("collection/create_collection", create_collection),
@@ -53,5 +60,11 @@ urlpatterns = [
     # collection apis —— for item
     path("collection/add_to_collection", add_to_collection),
     path("collection/remove_from_collection", remove_from_collection),
-    path("collection/get_collection_record_list", get_collection_record_list)
+    path("collection/get_collection_record_list", get_collection_record_list),
+
+    # notification apis
+    path("notification/get_notification_list", get_notification_list),
+    path("notification/delete_notification", delete_notification),
+    path("notification/update_notification", update_notification),
+    path("notification/get_unread_notification_num", get_unread_notification_num)
 ]

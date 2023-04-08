@@ -13,13 +13,11 @@ from .utils import StatusCode, response_wrapper, success_api_response, failed_ap
 @require_http_methods("GET")
 def get_history_list(request: HttpRequest):
     data = request.GET.dict()
-    if data is None:
-        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
     user = request.user
     per_page = data.get("per_page", 30)
     page_index = data.get("page_index", 1)
-    histories = user.history_list.all().order_by("-created_at")
+    histories = user.history_list.all().order_by("created_at")
 
     paginator = Paginator(histories, per_page)
     page_history = paginator.page(page_index)
@@ -44,7 +42,7 @@ def delete_history(request: HttpRequest):
         return failed_parse_data_response()
     
     user = request.user
-    history_id = data.get("id")
+    history_id = data.get("history_id")
     if history_id is None:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
     if not History.objects.filter(id=history_id).exists():
@@ -56,4 +54,4 @@ def delete_history(request: HttpRequest):
     
     history.delete()
 
-    return success_api_response(msg="成功删除该评论")
+    return success_api_response(msg="成功删除该历史记录")

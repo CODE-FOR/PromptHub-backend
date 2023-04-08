@@ -36,7 +36,7 @@ def get_notification_list(request: HttpRequest):
     if nf_type is None:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
     
-    notifications = user.notifications.filter(nf_type=nf_type).order_by("-created_at")
+    notifications = user.notifications.filter(nf_type=nf_type).order_by("created_at")
     paginator = Paginator(notifications, per_page)
     page_notification = paginator.page(page_index)
 
@@ -48,6 +48,25 @@ def get_notification_list(request: HttpRequest):
         msg="成功获得通知",
         data={
             "notification_list": notification_list
+        }
+    )
+
+@response_wrapper
+@user_jwt_auth()
+@require_http_methods("GET")
+def get_unread_notification_num(request: HttpRequest):
+    user = request.user
+
+    unread_notification = Notification.objects.filter(user=user, status=UNREAD)
+    unread_system_notification = unread_notification.filter(nf_type=SYSTEM_NF)
+    unread_comment_notification = unread_notification.filter(nf_type=COMMENT_NF)
+
+    return success_api_response(
+        msg="获取未读通知数量",
+        data={
+            "unread_notification_num" : len(unread_notification),
+            "unread_system_notification_num": len(unread_system_notification),
+            "unread_comment_notification_num": len(unread_comment_notification)
         }
     )
 

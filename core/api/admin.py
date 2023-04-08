@@ -186,7 +186,7 @@ def get_comment_list(request: HttpRequest):
     
     prompt = Prompt.objects.get(id=prompt_id)
 
-    paginator = Paginator(prompt.comment_list.all().order_by("-created_at"), per_page)
+    paginator = Paginator(prompt.comment_list.all().order_by("created_at"), per_page)
     page_comments = paginator.page(page_index)
 
     comment_list = []
