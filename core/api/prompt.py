@@ -3,8 +3,10 @@ from django.views.decorators.http import require_http_methods
 
 from core.models.prompt import Prompt, LANCHED, UNDER_REVIEW
 from core.models.audit_record import AuditRecord, IN_PROGRESS
+from core.models.comment import Comment
+from core.models.history import History
 
-from .auth import user_jwt_auth
+from .auth import user_jwt_auth, get_user_from_token
 from .utils import StatusCode, response_wrapper, success_api_response, failed_api_response, \
                    parse_data, failed_parse_data_response
 
@@ -89,6 +91,10 @@ def edit_prompt(request: HttpRequest):
     prompt_object.upload_status = UNDER_REVIEW
     prompt_object.save()
 
+    comment_list = Comment.objects.filter(prompt=prompt_object)
+    for comment in comment_list:
+        comment.delete()
+
     existing_in_progress_audit_record = AuditRecord.objects.filter(prompt=prompt_object, status=IN_PROGRESS)
     for audit_record in existing_in_progress_audit_record:
         audit_record.delete()
@@ -144,6 +150,13 @@ def get_prompt(request: HttpRequest):
 
     if prompt.upload_status != LANCHED:
         return failed_api_response(StatusCode.BAD_REQUEST, "作品不存在")
+    
+    user = get_user_from_token(request)
+    if user is not None:
+        existing_histories = History.objects.filter(prompt=prompt, user=user)
+        for history in existing_histories:
+            history.delete()
+        History.objects.create(prompt=prompt, user=user)
 
     return success_api_response(
         msg="成功获得作品内容",
