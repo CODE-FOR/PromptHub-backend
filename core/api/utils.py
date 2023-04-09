@@ -43,6 +43,7 @@ def response_wrapper(func):
         response = func(*args, **kwargs)
         '''reconstruct response'''
         if isinstance(response, dict):
+            response["data"]["msg"] = response["msg"]
             response = JsonResponse(response["data"], status=response["code"])
         return response
     return inner
