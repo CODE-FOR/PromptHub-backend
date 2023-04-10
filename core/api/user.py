@@ -33,11 +33,22 @@ def follow(request: HttpRequest):
 
     user = request.user
 
+    msg = "成功"
+
     if user.following.filter(id=following_user_id).exists():
         following_relation = UserFollowing.objects.get(user=user, following_user=following_user)
-        UserFollowing.objects.delete()
+        following_relation.delete()
+        msg += "取消关注"
     else:
         UserFollowing.objects.create(user=user, following_user=following_user)
+        msg += "关注"
+
+    return success_api_response(
+        msg=msg,
+        data={
+            "following_user_id": following_user_id
+        }
+    )
     
 
 @response_wrapper
