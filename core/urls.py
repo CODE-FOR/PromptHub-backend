@@ -15,6 +15,7 @@ from core.api.collections import add_to_collection, create_collection, \
     delete_collection, mod_collection, remove_from_collection, get_collection_list, get_collection_record_list
 from core.api.notification import get_notification_list, delete_notification, update_notification, \
     get_unread_notification_num
+from core.api.prompt_list import search_prompt_keyword, hot_prompt_list, personized_prompt_list
 
 urlpatterns = [
     # auth apis
@@ -66,5 +67,10 @@ urlpatterns = [
     path("notification/get_notification_list", get_notification_list),
     path("notification/delete_notification", delete_notification),
     path("notification/update_notification", update_notification),
-    path("notification/get_unread_notification_num", get_unread_notification_num)
+    path("notification/get_unread_notification_num", get_unread_notification_num),
+
+    # prompt_list
+    path("prompt_list/search_prompt_keyword", search_prompt_keyword),
+    path("prompt_list/hot_prompt_list", hot_prompt_list),
+    path("prompt_list/personized_prompt_list", personized_prompt_list)
 ]
