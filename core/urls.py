@@ -16,6 +16,7 @@ from core.api.collections import add_to_collection, create_collection, \
 from core.api.notification import get_notification_list, delete_notification, update_notification, \
     get_unread_notification_num
 from core.api.prompt_list import search_prompt_keyword, hot_prompt_list, personized_prompt_list
+from core.api.user import follow, get_self_published_prompt, get_audit_record_list, delete_audit_record
 
 urlpatterns = [
     # auth apis
@@ -29,6 +30,12 @@ urlpatterns = [
     path("user/forget_password", forget_password),
     path("user/confirm_forget_password", confirm_forget_password),
     path("user/change_password", change_password),
+
+    # user profile apis
+    path("user/follow", follow),
+    path("user/get_prompt_list", get_self_published_prompt),
+    path("user/get_audit_record_list", get_audit_record_list),
+    path("user/delete_audit_record", delete_audit_record),
 
     # admin apis
     path("admin/get_user_list", admin.get_user_list),
