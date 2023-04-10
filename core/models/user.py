@@ -33,7 +33,7 @@ class User(models.Model):
         data = {
             "id": self.id,
             "nickname": self.nickname,
-            "avater": self.avatar,
+            "avatar": self.avatar,
             "is_banned": self.is_banned
         }
         return data

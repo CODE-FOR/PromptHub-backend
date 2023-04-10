@@ -92,8 +92,8 @@ def create_collection(request: HttpRequest):
     if Collection.objects.filter(name=name,user = user).exists():
         return failed_api_response(StatusCode.CONFLICT, "不可以使用重复的名字")
 
-    Collection.objects.create(name=name, user=user, visibility=visibility,cover=cover)
-    return success_api_response(msg="成功")
+    Collection.objects.create(name=name, user=user, visibility=visibility, cover=cover)
+    return success_api_response(msg="成功创建")
 
 
 '''
@@ -118,7 +118,7 @@ def delete_collection(request: HttpRequest):
 
     collection = Collection.objects.get(id=collection_id)
     collection.delete()
-    return success_api_response(msg="成功删除收藏")
+    return success_api_response(msg="成功删除收藏夹")
 
 
 '''

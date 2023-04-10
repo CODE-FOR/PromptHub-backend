@@ -107,9 +107,9 @@ def get_audit_record_list(request: HttpRequest):
         audit_record_list.append(audit_record.to_dict())
     
     return success_api_response(
-        msg="成功获取待审核Prompt",
+        msg="成功获取Prompt审核记录",
         data={
-            "prompt_list": audit_record_list,
+            "audit_record_list": audit_record_list,
             "has_next": page_audit_record.has_next(),
             "has_previous": page_audit_record.has_previous(),
             "page_index": page_index,

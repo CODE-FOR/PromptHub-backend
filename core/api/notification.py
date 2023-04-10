@@ -36,7 +36,7 @@ def get_notification_list(request: HttpRequest):
     if nf_type is None:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
     
-    notifications = user.notifications.filter(nf_type=nf_type).order_by("created_at")
+    notifications = user.notifications.filter(nf_type=nf_type).order_by("-created_at")
     paginator = Paginator(notifications, per_page)
     page_notification = paginator.page(page_index)
 

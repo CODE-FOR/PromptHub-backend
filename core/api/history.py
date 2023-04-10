@@ -17,7 +17,7 @@ def get_history_list(request: HttpRequest):
     user = request.user
     per_page = data.get("per_page", 30)
     page_index = data.get("page_index", 1)
-    histories = user.history_list.all().order_by("created_at")
+    histories = user.history_list.all().order_by("-created_at")
 
     paginator = Paginator(histories, per_page)
     page_history = paginator.page(page_index)
