@@ -106,9 +106,9 @@ def get_audit_record_list(request: HttpRequest):
 
     user = request.user
 
-    paginator = Paginator(AuditRecord.objects.filter(status=status, user=user).order_by("-id"), per_page) \
+    paginator = Paginator(AuditRecord.objects.filter(status=status, user=user, is_delete=False).order_by("-id"), per_page) \
                 if status is not None else \
-                Paginator(AuditRecord.objects.filter(user=user).order_by("-id"), per_page)
+                Paginator(AuditRecord.objects.filter(user=user, is_delete=False).order_by("-id"), per_page)
     page_audit_record = paginator.page(page_index)
 
     audit_record_list = []
@@ -153,7 +153,8 @@ def delete_audit_record(request: HttpRequest):
     if user != audit_record.user:
         return failed_api_response(StatusCode.BAD_REQUEST, "用户无权限删除该评审记录")
     
-    audit_record.delete()
+    # audit_record.delete()
+    audit_record.be_deleted()
 
     return success_api_response(
         msg="成功删除该评审记录",
