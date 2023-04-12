@@ -33,6 +33,9 @@ def follow(request: HttpRequest):
 
     user = request.user
 
+    if user.id == following_user_id:
+        return failed_api_response(StatusCode.BAD_REQUEST, "不可以自己关注自己")
+        
     msg = "成功"
 
     if user.following.filter(id=following_user_id).exists():
