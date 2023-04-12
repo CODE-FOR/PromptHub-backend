@@ -53,8 +53,8 @@ def search_prompt_keyword(request: HttpRequest):
 @require_http_methods("GET")
 def hot_prompt_list(request: HttpRequest):
     data = request.GET.dict()
-    if not data:
-        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
+    # if not data:
+    #     return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
     per_page = data.get("per_page", 30)
     page_index = data.get("page_index", 1)
@@ -83,8 +83,8 @@ def hot_prompt_list(request: HttpRequest):
 @require_http_methods("GET")
 def personized_prompt_list(request: HttpRequest):
     data = request.GET.dict()
-    if not data:
-        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
+    # if not data:
+    #     return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
     user = get_user_from_token(request)
     user_id = -1 if user is None else user.id
