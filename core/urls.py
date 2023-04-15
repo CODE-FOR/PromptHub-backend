@@ -17,6 +17,7 @@ from core.api.notification import get_notification_list, delete_notification, up
     get_unread_notification_num
 from core.api.prompt_list import search_prompt_keyword, hot_prompt_list, personized_prompt_list
 from core.api.user import follow, get_self_published_prompt, get_audit_record_list, delete_audit_record
+from core.api.upload import get_qiniu_token
 
 urlpatterns = [
     # auth apis
@@ -79,5 +80,8 @@ urlpatterns = [
     # prompt_list
     path("prompt_list/search_prompt_keyword", search_prompt_keyword),
     path("prompt_list/hot_prompt_list", hot_prompt_list),
-    path("prompt_list/personized_prompt_list", personized_prompt_list)
+    path("prompt_list/personized_prompt_list", personized_prompt_list),
+
+    # upload image
+    path("image/get_qiniu_token", get_qiniu_token)
 ]
