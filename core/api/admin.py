@@ -151,7 +151,7 @@ def audit_prompt(request: HttpRequest):
 
     '''notify the uploader about upload status'''
     uploader = audit_record.user
-    new_system_notification(passed=passed, prompt_id=prompt.id, content=content, to_user=uploader)
+    new_system_notification(passed=passed, prompt=prompt, content=content, to_user=uploader)
 
     return success_api_response(
         msg="完成审核",

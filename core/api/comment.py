@@ -41,11 +41,11 @@ def create_comment(request: HttpRequest):
         parent_comment = Comment.objects.get(id=parent_comment_id)
         to_user = parent_comment.user
         if to_user != user:
-            new_reply_notification(username=user.nickname, prompt_id=prompt.id,
+            new_reply_notification(username=user.nickname, prompt=prompt,
                                    content=content, to_user=parent_comment.user)
     else:
         if user != prompt.uploader:
-            new_comment_notification(username=user.nickname, prompt_id=prompt.id,
+            new_comment_notification(username=user.nickname, prompt=prompt,
                                      content=content, to_user=prompt.uploader)
 
     comment = Comment.objects.create(prompt=prompt, user=user, content=content, parent_comment=parent_comment)

@@ -8,17 +8,17 @@ from .auth import user_jwt_auth
 from .utils import StatusCode, response_wrapper, success_api_response, failed_api_response, \
                    parse_data, failed_parse_data_response
 
-def new_system_notification(passed, prompt_id, content, to_user):
-    title = f"作品(id:{prompt_id})审核通过" if passed else f"作品(id:{prompt_id})审核不通过"
-    Notification.objects.create(user=to_user, title=title, content=content, status=UNREAD, nf_type=SYSTEM_NF)
+def new_system_notification(passed, prompt, content, to_user):
+    title = f"作品(id:{prompt.id})审核通过" if passed else f"作品(id:{prompt.id})审核不通过"
+    Notification.objects.create(user=to_user, prompt=prompt, title=title, content=content, status=UNREAD, nf_type=SYSTEM_NF)
 
-def new_comment_notification(username, prompt_id, content, to_user):
-    title = f"{username}在你的作品(id:{prompt_id})发表了评论"
-    Notification.objects.create(user=to_user, title=title, content=content, status=UNREAD, nf_type=COMMENT_NF)
+def new_comment_notification(username, prompt, content, to_user):
+    title = f"{username}在你的作品(id:{prompt.id})发表了评论"
+    Notification.objects.create(user=to_user, prompt=prompt, title=title, content=content, status=UNREAD, nf_type=COMMENT_NF)
 
-def new_reply_notification(username, prompt_id, content, to_user):
-    title = f"{username}回复了你的评论，作品(id:{prompt_id})"
-    Notification.objects.create(user=to_user, title=title, content=content, status=UNREAD, nf_type=COMMENT_NF)
+def new_reply_notification(username, prompt, content, to_user):
+    title = f"{username}回复了你的评论，作品(id:{prompt.id})"
+    Notification.objects.create(user=to_user, prompt=prompt, title=title, content=content, status=UNREAD, nf_type=COMMENT_NF)
 
 @response_wrapper
 @user_jwt_auth()

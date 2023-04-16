@@ -1,5 +1,6 @@
 from django.db import models
 from .user import User
+from .prompt import Prompt
 
 READ = 0
 UNREAD = 1
@@ -18,6 +19,7 @@ NOTIFICATION_TYPE_CHOICES = (
 
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    prompt = models.ForeignKey(Prompt, on_delete=models.CASCADE, related_name="related_notifications")
     title = models.CharField(max_length=256)
     content = models.CharField(max_length=4096)
     status = models.IntegerField(choices=READ_STATUS_CHOICES)
@@ -26,6 +28,7 @@ class Notification(models.Model):
 
     def simple_dict(self):
         data = {
+            "prompt_id": self.prompt.id,
             "title": self.title,
             "content": self.content,
             "status": self.status,
