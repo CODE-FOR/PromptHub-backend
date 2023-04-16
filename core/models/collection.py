@@ -15,7 +15,7 @@ class Collection(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="collection_list")
     created_at = models.DateTimeField(auto_now_add=True)
     visibility = models.IntegerField(choices=VISIBILITY_STATUS_CHOICES)
-    cover = models.URLField()
+    cover = models.URLField(default="http://rsj4gl54w.hb-bkt.clouddn.com/1.png")
 
     def full_dict(self):
         data = {

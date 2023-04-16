@@ -32,6 +32,9 @@ def add_to_collection(request: HttpRequest):
         return failed_api_response(StatusCode.ID_NOT_EXISTS, "无法收藏，数据异常")
 
     CollectRecord.objects.create(prompt=prompt, collection=collection)
+    
+    collection.cover = prompt.picture
+    collection.save()
     prompt.collection_count = prompt.collection_count + 1
     prompt.save()
 
@@ -81,9 +84,8 @@ def create_collection(request: HttpRequest):
     user = request.user
     name = data.get("name")
     visibility = data.get("visibility")
-    cover = data.get("cover")
 
-    if not check_data(name, visibility, cover):
+    if not check_data(name, visibility):
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
 
     if len(name) > 50:
@@ -92,7 +94,7 @@ def create_collection(request: HttpRequest):
     if Collection.objects.filter(name=name,user = user).exists():
         return failed_api_response(StatusCode.CONFLICT, "不可以使用重复的名字")
 
-    Collection.objects.create(name=name, user=user, visibility=visibility, cover=cover)
+    Collection.objects.create(name=name, user=user, visibility=visibility)
     return success_api_response(msg="成功创建")
 
 
@@ -136,9 +138,8 @@ def mod_collection(request: HttpRequest):
     collection_id = data.get("id")
     name = data.get("name")
     visibility = data.get("visibility")
-    cover = data.get("cover")
 
-    if not check_data(collection_id, name, visibility, cover):
+    if not check_data(collection_id, name, visibility):
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
 
     if len(name) > 50:
@@ -150,7 +151,6 @@ def mod_collection(request: HttpRequest):
     collection = Collection.objects.get(id=collection_id)
     collection.name = name
     collection.visibility = visibility
-    collection.cover = cover
     collection.save()
 
     return success_api_response(msg="成功更新收藏夹信息")
