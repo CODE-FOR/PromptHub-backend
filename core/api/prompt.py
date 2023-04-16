@@ -152,6 +152,11 @@ def get_prompt(request: HttpRequest):
         return failed_api_response(StatusCode.BAD_REQUEST, "作品不存在")
     
     user = get_user_from_token(request)
+    is_following = False
+    if user is not None:
+        uploader = prompt.uploader
+        is_following = user.following.filter(following_user=uploader).exists()
+    
     if user is not None:
         existing_histories = History.objects.filter(prompt=prompt, user=user)
         for history in existing_histories:
@@ -161,6 +166,7 @@ def get_prompt(request: HttpRequest):
     return success_api_response(
         msg="成功获得作品内容",
         data={
-            "prompt": prompt.full_dict()
+            "prompt": prompt.full_dict(),
+            "is_following": is_following
         }
     )
