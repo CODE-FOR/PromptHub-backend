@@ -232,3 +232,37 @@ def get_collection_record_list(request: HttpRequest):
             "page_total": paginator.num_pages
         }
     )
+
+@response_wrapper
+@user_jwt_auth()
+@require_http_methods("POST")
+def get_user_prompt_collection_relation(request: HttpRequest):
+    data = parse_data(request)
+    if data is None:
+        return failed_parse_data_response()
+    
+    prompt_id = data.get("prompt_id")
+    user = request.user
+
+    if not Prompt.objects.filter(id=prompt_id):
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, "作品不存在")
+    prompt = Prompt.objects.get(id=prompt_id)
+
+    prompt_collect_records = prompt.collect_list.all()
+    prompt_collections = [record.collection for record in prompt_collect_records]
+    collections = Collection.objects.filter(user_id=user.id)
+    collection_list = []
+    for collection in collections:
+        collection_dict = collection.full_dict()
+        prompt_is_in = False
+        if collection in prompt_collections:
+            prompt_is_in = True
+        collection_dict["prompt_is_in"] = prompt_is_in
+        collection_list.append(collection_dict)
+
+    return success_api_response(
+        msg="成功获取收藏列表",
+        data={
+            "collection_list": collection_list
+        }
+    )
