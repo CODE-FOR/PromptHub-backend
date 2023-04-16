@@ -95,7 +95,7 @@ def user_obtain_jwt_token(request: HttpRequest):
         data={
             "access_token": generate_access_token(user.id, ACCOUNT_TYPE_USER),
             "refresh_token": generate_refresh_token(user.id, ACCOUNT_TYPE_USER),
-            "user_id": user.id
+            "user": user.simple_dict()
         }
     )
 
