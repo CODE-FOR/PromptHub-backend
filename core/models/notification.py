@@ -26,6 +26,7 @@ class Notification(models.Model):
 
     def simple_dict(self):
         data = {
+            "title": self.title,
             "content": self.content,
             "status": self.status,
             "created_at": self.created_at
