@@ -235,9 +235,9 @@ def get_collection_record_list(request: HttpRequest):
 
 @response_wrapper
 @user_jwt_auth()
-@require_http_methods("POST")
+@require_http_methods("GET")
 def get_user_prompt_collection_relation(request: HttpRequest):
-    data = parse_data(request)
+    data = request.GET.dict()
     if data is None:
         return failed_parse_data_response()
     
