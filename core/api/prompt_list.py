@@ -18,8 +18,8 @@ def search_prompt_keyword(request: HttpRequest):
     keyword = data.get("keyword")
     sorted_by = data.get("sorted_by", "hot") # hot / time
     model = data.get("model", None)
-    per_page = data.get("per_page", 30)
-    page_index = data.get("page_index", 1)
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
 
     if model is None:
         prompt_list = Prompt.objects.filter(prompt__icontains=keyword, upload_status=LANCHED)
@@ -56,8 +56,8 @@ def hot_prompt_list(request: HttpRequest):
     # if not data:
     #     return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
-    per_page = data.get("per_page", 30)
-    page_index = data.get("page_index", 1)
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
 
     prompt_list = Prompt.objects.filter(upload_status=LANCHED).order_by("-collection_count")
     
@@ -89,8 +89,8 @@ def personized_prompt_list(request: HttpRequest):
     user = get_user_from_token(request)
     user_id = -1 if user is None else user.id
 
-    per_page = data.get("per_page", 30)
-    page_index = data.get("page_index", 1)
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
 
     if user_id == -1:
         unsampled_prompt_list = Prompt.objects.filter(upload_status=LANCHED)

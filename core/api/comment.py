@@ -86,9 +86,9 @@ def get_comment_list(request: HttpRequest):
     user = get_user_from_token(request)
     user_id = -1 if user is None else user.id
 
-    prompt_id = data.get("prompt_id")
-    per_page = data.get("per_page", 30)
-    page_index = data.get("page_index", 1)
+    prompt_id = int(data.get("prompt_id"))
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
     if prompt_id is None:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整, 缺少prompt_id")
     

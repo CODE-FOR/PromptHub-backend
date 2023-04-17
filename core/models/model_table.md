@@ -12,7 +12,6 @@
 * nickname
 * avatar：图像url
 * followers
-* is_delete：safe delete
 * is_confirmed：邮箱是否验证
 * is_banned：是否加入黑名单
 
@@ -23,7 +22,6 @@
 * created_at
 * content
 * parent_comment
-* is_delete：safe delete
 
 ### 作品 Prompt
 
@@ -39,7 +37,6 @@
     * 已经上架
     * 审核中
     * 下架中
-* is_delete：safe delete
 
 ### 通知 notification
 
@@ -63,6 +60,7 @@
 * user
 * status
 * feedback
+* is_delete
 
 ### 收藏记录 collect_record
 

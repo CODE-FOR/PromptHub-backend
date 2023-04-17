@@ -18,14 +18,14 @@ class AuditRecord(models.Model):
     status = models.IntegerField(choices=AUDIT_STATUS_CHOICES)
     feedback = models.CharField(max_length=4096)
     is_delete = models.BooleanField(default=False)
+
     def to_dict(self):
         data = {
             "user": self.user.simple_dict(),
             "prompt": self.prompt.simple_dict(),
             "created_at": self.created_at,
             "status": self.status,
-            "feedback": self.feedback,
-            "is_delete": self.is_delete
+            "feedback": self.feedback
         }
         return data
 

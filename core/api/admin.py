@@ -22,11 +22,10 @@ def get_user_list(request: HttpRequest):
         page_index: page index, default 1
         per_page: user num per page, default 30
     """
-
     data = request.GET.dict()
     
-    per_page = data.get("per_page", 30)
-    page_index = data.get("page_index", 1)
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
 
     paginator = Paginator(User.objects.all().order_by("id"), per_page)
     page_user = paginator.page(page_index)
@@ -58,8 +57,8 @@ def get_prompt_list(request: HttpRequest):
     """
     data = request.GET.dict()
 
-    per_page = data.get("per_page", 30)
-    page_index = data.get("page_index", 1)
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
 
     paginator = Paginator(Prompt.objects.all().order_by("-id"), per_page)
     page_prompt = paginator.page(page_index)
@@ -93,12 +92,12 @@ def get_audit_record_list(request: HttpRequest):
 
     data = request.GET.dict()
 
-    per_page = data.get("per_page", 30)
-    page_index = data.get("page_index", 1)
-    status = data.get("status", None)
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
+    status = int(data.get("status", -1))
 
     paginator = Paginator(AuditRecord.objects.filter(status=status).order_by("-id"), per_page) \
-                if status is not None else \
+                if status != -1 else \
                 Paginator(AuditRecord.objects.all().order_by("-id"), per_page)
     page_audit_record = paginator.page(page_index)
 
@@ -175,9 +174,9 @@ def get_comment_list(request: HttpRequest):
     if not data:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
-    prompt_id = data.get("prompt_id")
-    per_page = data.get("per_page", 30)
-    page_index = data.get("page_index", 1)
+    prompt_id = int(data.get("prompt_id"))
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
     if prompt_id is None:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     

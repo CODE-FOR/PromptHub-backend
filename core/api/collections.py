@@ -164,12 +164,12 @@ def get_collection_list(request: HttpRequest):
 
     user = get_user_from_token(request)
     user_id = -1 if user is None else user.id
-    fetch_user_id = data.get("fetch_user_id")
+    fetch_user_id = int(data.get("fetch_user_id"))
 
     if fetch_user_id is None:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整, 缺少fetch_user_id")
-    per_page = data.get("per_page", 30)
-    page_index = data.get("page_index", 1)
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
 
     collection_list = []
     if user_id == fetch_user_id:
@@ -204,9 +204,9 @@ def get_collection_record_list(request: HttpRequest):
     user = get_user_from_token(request)
     user_id = -1 if user is None else user.id
     
-    collection_id = data.get("id")
-    per_page = data.get("per_page", 30)
-    page_index = data.get("page_index", 1)
+    collection_id = int(data.get("id"))
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
     collection_records_view = []
 
     if collection_id is None:
@@ -241,7 +241,7 @@ def get_user_prompt_collection_relation(request: HttpRequest):
     if data is None:
         return failed_parse_data_response()
     
-    prompt_id = data.get("prompt_id")
+    prompt_id = int(data.get("prompt_id"))
     user = request.user
 
     if not Prompt.objects.filter(id=prompt_id):

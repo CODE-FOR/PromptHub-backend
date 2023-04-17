@@ -142,7 +142,7 @@ def get_prompt(request: HttpRequest):
     if not data:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
-    prompt_id = data.get("id")
+    prompt_id = int(data.get("id"))
     if prompt_id is None:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
     if not Prompt.objects.filter(id=prompt_id).exists():

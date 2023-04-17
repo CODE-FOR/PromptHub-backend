@@ -30,10 +30,10 @@ def get_notification_list(request: HttpRequest):
     
     user = request.user
 
-    nf_type = data.get("nf_type")
-    per_page = data.get("per_page", 30)
-    page_index = data.get("page_index", 1)
-    if nf_type is None:
+    nf_type = int(data.get("nf_type", -1))
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
+    if nf_type == -1:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
     
     notifications = user.notifications.filter(nf_type=nf_type).order_by("-created_at")

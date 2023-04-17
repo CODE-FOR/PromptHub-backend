@@ -68,8 +68,8 @@ def get_self_published_prompt(request: HttpRequest):
     """
     data = request.GET.dict()
 
-    per_page = data.get("per_page", 30)
-    page_index = data.get("page_index", 1)
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
 
     paginator = Paginator(Prompt.objects.filter(uploader=user).order_by("-id"), per_page)
     page_prompt = paginator.page(page_index)
@@ -103,14 +103,14 @@ def get_audit_record_list(request: HttpRequest):
 
     data = request.GET.dict()
 
-    per_page = data.get("per_page", 30)
-    page_index = data.get("page_index", 1)
-    status = data.get("status", None)
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
+    status = int(data.get("status", -1))
 
     user = request.user
 
     paginator = Paginator(AuditRecord.objects.filter(status=status, user=user, is_delete=False).order_by("-id"), per_page) \
-                if status is not None else \
+                if status != -1 else \
                 Paginator(AuditRecord.objects.filter(user=user, is_delete=False).order_by("-id"), per_page)
     page_audit_record = paginator.page(page_index)
 
