@@ -23,7 +23,9 @@ def get_name(request: HttpRequest):
     user = User.objects.get(id=id)
     if user is None:
         return failed_api_response(StatusCode.ID_NOT_EXISTS, "没有此用户")
-    return user.nickname
+    return success_api_response(msg="成功获取名字", data={
+        "nickname": user.nickname
+    })
         
 @response_wrapper
 @require_http_methods("POST")
