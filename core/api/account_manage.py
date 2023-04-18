@@ -9,6 +9,22 @@ from .send_email import send_sign_in_email, send_forget_password_email
 from .utils import StatusCode, response_wrapper, success_api_response, failed_api_response, \
                    parse_data, failed_parse_data_response
 
+
+# this API maybe broken in future release @1330571 
+@response_wrapper
+@require_http_methods("GET")
+def get_name(request: HttpRequest):
+    data = parse_data(request)
+    if data is None:
+        return failed_parse_data_response()
+    id = data.get("id")
+    if id is None:
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
+    user = User.objects.get(id=id)
+    if user is None:
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, "没有此用户")
+    return user.nickname
+        
 @response_wrapper
 @require_http_methods("POST")
 def sign_up(request: HttpRequest):

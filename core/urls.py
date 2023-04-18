@@ -6,7 +6,7 @@ from django.urls import path
 
 import core.api.admin as admin
 from core.api.auth import user_obtain_jwt_token, admin_obtain_jwt_token, refresh_jwt_token
-from core.api.account_manage import sign_up, confirm_and_create, forget_password, confirm_forget_password, \
+from core.api.account_manage import sign_up, get_name, confirm_and_create, forget_password, confirm_forget_password, \
     change_password
 from core.api.prompt import create_prompt, edit_prompt, delete_prompt, get_prompt
 from core.api.comment import create_comment, delete_comment, get_comment_list
@@ -27,6 +27,7 @@ urlpatterns = [
     path("auth/refresh_token", refresh_jwt_token),
 
     # account apis
+    path("user/get_name", get_name),
     path("user/sign_up", sign_up),
     path("user/confirm_and_create", confirm_and_create),
     path("user/forget_password", forget_password),
@@ -72,7 +73,8 @@ urlpatterns = [
     path("collection/remove_from_collection", remove_from_collection),
     path("collection/get_collection_record_list", get_collection_record_list),
     # collection other api
-    path("collection/get_user_prompt_collection_relation", get_user_prompt_collection_relation),
+    path("collection/get_user_prompt_collection_relation",
+         get_user_prompt_collection_relation),
 
     # notification apis
     path("notification/get_notification_list", get_notification_list),
