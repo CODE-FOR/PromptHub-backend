@@ -14,7 +14,7 @@ from .utils import StatusCode, response_wrapper, success_api_response, failed_ap
 @response_wrapper
 @require_http_methods("GET")
 def get_name(request: HttpRequest):
-    data = parse_data(request)
+    data = request.GET.dict()
     if data is None:
         return failed_parse_data_response()
     id = data.get("id")
