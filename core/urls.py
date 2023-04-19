@@ -8,7 +8,7 @@ import core.api.admin as admin
 from core.api.auth import user_obtain_jwt_token, admin_obtain_jwt_token, refresh_jwt_token
 from core.api.account_manage import sign_up, get_user_simple_dict, confirm_and_create, forget_password, confirm_forget_password, \
     change_password
-from core.api.prompt import create_prompt, edit_prompt, delete_prompt, get_prompt
+from core.api.prompt import create_prompt, edit_prompt, delete_prompt, get_prompt, get_editing_prompt
 from core.api.comment import create_comment, delete_comment, get_comment_list
 from core.api.history import get_history_list, delete_history
 from core.api.collections import add_to_collection, create_collection, \
@@ -60,6 +60,7 @@ urlpatterns = [
     path("prompt/edit_prompt", edit_prompt),
     path("prompt/delete_prompt", delete_prompt),
     path("prompt/get_prompt", get_prompt),
+    path("prompt/get_editing_prompt", get_editing_prompt),
 
     # comment apis
     path("comment/create_comment", create_comment),

@@ -2,7 +2,7 @@ from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 
-from core.models.notification import Notification, UNREAD, SYSTEM_NF, COMMENT_NF
+from core.models.notification import Notification, UNREAD, READ, SYSTEM_NF, COMMENT_NF
 
 from .auth import user_jwt_auth
 from .utils import StatusCode, response_wrapper, success_api_response, failed_api_response, \
@@ -42,6 +42,8 @@ def get_notification_list(request: HttpRequest):
 
     notification_list = []
     for notification in page_notification.object_list:
+        notification.status = READ
+        notification.save()
         notification_list.append(notification.simple_dict())
 
     return success_api_response(

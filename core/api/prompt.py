@@ -171,3 +171,25 @@ def get_prompt(request: HttpRequest):
             "is_following": is_following
         }
     )
+
+@response_wrapper
+@user_jwt_auth()
+@require_http_methods("GET")
+def get_editing_prompt(request: HttpRequest):
+    data = request.GET.dict()
+    if not data:
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
+    
+    prompt_id = int(data.get("id"))
+    if prompt_id is None:
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
+    if not Prompt.objects.filter(id=prompt_id).exists():
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, "作品不存在")
+    prompt = Prompt.objects.get(id=prompt_id)
+
+    return success_api_response(
+        msg="成功获得编辑作品详情",
+        data={
+            "prompt": prompt.full_dict()
+        }
+    )

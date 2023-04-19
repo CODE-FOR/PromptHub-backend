@@ -35,9 +35,12 @@ def manage_collection_records(request: HttpRequest):
             return failed_api_response(StatusCode.BAD_REQUEST, error_msg="用户无权限添加该收藏")
         
         if is_in and not CollectRecord.objects.filter(prompt=prompt, collection=collection).exists():
+            prompt.collection_count = prompt.collection_count + 1
             CollectRecord.objects.create(prompt=prompt, collection=collection)
         elif not is_in and CollectRecord.objects.filter(prompt=prompt, collection=collection).exists():
+            prompt.collection_count = prompt.collection_count + 1
             CollectRecord.objects.get(prompt=prompt, collection=collection).delete()
+    prompt.save()
     
     return success_api_response(
         msg="成功更新作品收藏"
