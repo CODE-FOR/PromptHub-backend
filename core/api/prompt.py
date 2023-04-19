@@ -25,7 +25,7 @@ def create_prompt(request: HttpRequest):
 
     prompt = data.get("prompt")
     picture = data.get("picture")
-    picture = "http://rsj4gl54w.hb-bkt.clouddn.com\\" + picture
+    picture = "img\\" + picture
     model = data.get("model")
     width = data.get("width")
     height = data.get("height")
