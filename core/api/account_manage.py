@@ -13,7 +13,7 @@ from .utils import StatusCode, response_wrapper, success_api_response, failed_ap
 # this API maybe broken in future release @1330571 
 @response_wrapper
 @require_http_methods("GET")
-def get_name(request: HttpRequest):
+def get_user_simple_dict(request: HttpRequest):
     data = request.GET.dict()
     if data is None:
         return failed_parse_data_response()
@@ -24,7 +24,7 @@ def get_name(request: HttpRequest):
     if user is None:
         return failed_api_response(StatusCode.ID_NOT_EXISTS, "没有此用户")
     return success_api_response(msg="成功获取名字", data={
-        "nickname": user.nickname
+        "user": user.simple_dict()
     })
         
 @response_wrapper
