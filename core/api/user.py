@@ -2,7 +2,7 @@ from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 
-from core.models.prompt import Prompt
+from core.models.prompt import Prompt, LANCHED
 from core.models.user import User, UserFollowing
 from core.models.audit_record import AuditRecord
 
@@ -52,26 +52,158 @@ def follow(request: HttpRequest):
             "following_user_id": following_user_id
         }
     )
-    
 
 @response_wrapper
-@user_jwt_auth()
 @require_http_methods("GET")
-def get_self_published_prompt(request: HttpRequest):
-
-    user = request.user
-
-    """
-    :param request:
-        page_index: page index, default 1
-        per_page: user num per page, default 30
-    """
+def get_user_following_num(request: HttpRequest):
     data = request.GET.dict()
+    if not data:
+        return failed_api_response(StatusCode.BAD_REQUEST, error_msg="参数不完整")
+    
+    user_id = data.get("user_id", None)
+    if user_id is None or not User.objects.filter(id=user_id).exists():
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, error_msg="用户不存在")
+    user = User.objects.get(id=user_id)
+
+    num = len(user.following.all())
+
+    return success_api_response(
+        msg="成功获取关注人数",
+        data={
+            "following_num": num
+        }
+    )
+
+@response_wrapper
+@require_http_methods("GET")
+def get_user_following_list(request: HttpRequest):
+    data = request.GET.dict()
+    if not data:
+        return failed_api_response(StatusCode.BAD_REQUEST, error_msg="参数不完整")
+    
+    user_id = data.get("user_id", None)
+    if user_id is None or not User.objects.filter(id=user_id).exists():
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, error_msg="用户不存在")
+    user = User.objects.get(id=user_id)
 
     per_page = int(data.get("per_page", 30))
     page_index = int(data.get("page_index", 1))
 
-    paginator = Paginator(Prompt.objects.filter(uploader=user).order_by("-id"), per_page)
+    paginator = Paginator(user.following.all(), per_page)
+    page_following = paginator.page(page_index)
+
+    following_list = []
+    for following in page_following.object_list:
+        following_list.append(following.following_user.simple_dict())
+
+    return success_api_response(
+        msg="成功获取关注列表",
+        data={
+            "following_list": following_list,
+            "has_next": page_following.has_next(),
+            "has_previous": page_following.has_previous(),
+            "page_index": page_index,
+            "page_total": paginator.num_pages
+        }
+    )
+
+@response_wrapper
+@require_http_methods("GET")
+def get_user_follower_num(request: HttpRequest):
+    data = request.GET.dict()
+    if not data:
+        return failed_api_response(StatusCode.BAD_REQUEST, error_msg="参数不完整")
+    
+    user_id = data.get("user_id", None)
+    if user_id is None or not User.objects.filter(id=user_id).exists():
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, error_msg="用户不存在")
+    user = User.objects.get(id=user_id)
+
+    num = len(user.followers.all())
+
+    return success_api_response(
+        msg="成功获取粉丝人数",
+        data={
+            "follower_num": num
+        }
+    )
+
+@response_wrapper
+@require_http_methods("GET")
+def get_user_follower_list(request: HttpRequest):
+    data = request.GET.dict()
+    if not data:
+        return failed_api_response(StatusCode.BAD_REQUEST, error_msg="参数不完整")
+    
+    user_id = data.get("user_id", None)
+    if user_id is None or not User.objects.filter(id=user_id).exists():
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, error_msg="用户不存在")
+    user = User.objects.get(id=user_id)
+
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
+
+    paginator = Paginator(user.followers.all(), per_page)
+    page_follower = paginator.page(page_index)
+
+    follower_list = []
+    for follower in page_follower.object_list:
+        follower_list.append(follower.user.simple_dict())
+
+    return success_api_response(
+        msg="成功获取粉丝列表",
+        data={
+            "follower_list": follower_list,
+            "has_next": page_follower.has_next(),
+            "has_previous": page_follower.has_previous(),
+            "page_index": page_index,
+            "page_total": paginator.num_pages
+        }
+    )
+
+@response_wrapper
+@require_http_methods("GET")
+def get_published_prompt_num(request: HttpRequest):
+    data = request.GET.dict()
+    if not data:
+        return failed_api_response(StatusCode.BAD_REQUEST, error_msg="参数不完整")
+    
+    user_id = data.get("user_id", None)
+    if user_id is None or not User.objects.filter(id=user_id).exists():
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, error_msg="用户不存在")
+    user = User.objects.get(id=user_id)
+
+    num = len(Prompt.objects.filter(uploader=user, upload_status=LANCHED))
+
+    return success_api_response(
+        msg="成功获取作品数量",
+        data={
+            "prompt_num": num
+        }
+    )
+
+@response_wrapper
+@require_http_methods("GET")
+def get_published_prompt_list(request: HttpRequest):
+    """
+    :param request:
+        user_id:
+        page_index: page index, default 1
+        per_page: user num per page, default 30
+    """
+    data = request.GET.dict()
+    if not data:
+        return failed_api_response(StatusCode.BAD_REQUEST, error_msg="参数不完整")
+    
+    user_id = data.get("user_id", None)
+    if user_id is None or not User.objects.filter(id=user_id).exists():
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, error_msg="用户不存在")
+    user = User.objects.get(id=user_id)
+
+    per_page = int(data.get("per_page", 30))
+    page_index = int(data.get("page_index", 1))
+
+    paginator = Paginator(Prompt.objects.filter(uploader=user, upload_status=LANCHED).order_by("-id"), per_page)
     page_prompt = paginator.page(page_index)
 
     prompt_list = []
