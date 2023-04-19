@@ -38,7 +38,7 @@ def follow(request: HttpRequest):
         
     msg = "成功"
 
-    if user.following.filter(id=following_user_id).exists():
+    if user.following.filter(following_user_id=following_user_id).exists():
         following_relation = UserFollowing.objects.get(user=user, following_user=following_user)
         following_relation.delete()
         msg += "取消关注"
