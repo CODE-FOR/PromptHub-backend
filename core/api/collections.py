@@ -5,8 +5,43 @@ from .utils import response_wrapper, parse_data, failed_parse_data_response, che
     StatusCode, success_api_response
 from .auth import user_jwt_auth, get_user_from_token
 from core.models.collection import Collection, CollectRecord, Prompt, PUBLIC, PRIVATE
+from core.models.prompt import LANCHED
 from django.core.paginator import Paginator
 
+
+@response_wrapper
+@user_jwt_auth()
+@require_http_methods("POST")
+def manage_collection_records(request: HttpRequest):
+    data = parse_data(request)
+    if data is None:
+        return failed_parse_data_response()
+    
+    user = request.user
+    prompt_id = data.get("prompt_id")
+    collection_list = data.get("collection_list")
+
+    if not Prompt.objects.filter(id=prompt_id, upload_status=LANCHED).exists():
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, error_msg="作品不存在")
+    
+    prompt = Prompt.objects.get(id=prompt_id, upload_status=LANCHED)
+    for collection_info in collection_list:
+        collection_id = collection_info["collection_id"]
+        is_in = collection_info["is_in"]
+        if not Collection.objects.filter(id=collection_id).exists():
+            return failed_api_response(StatusCode.ID_NOT_EXISTS, error_msg="收藏夹不存在")
+        collection = Collection.objects.get(id=collection_id)
+        if collection.user != user:
+            return failed_api_response(StatusCode.BAD_REQUEST, error_msg="用户无权限添加该收藏")
+        
+        if is_in and not CollectRecord.objects.filter(prompt=prompt, collection=collection).exists():
+            CollectRecord.objects.create(prompt=prompt, collection=collection)
+        elif not is_in and CollectRecord.objects.filter(prompt=prompt, collection=collection).exists():
+            CollectRecord.objects.get(prompt=prompt, collection=collection).delete()
+    
+    return success_api_response(
+        msg="成功更新作品收藏"
+    )
 '''
     add an item to collection
 '''
