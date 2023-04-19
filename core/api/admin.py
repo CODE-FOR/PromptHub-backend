@@ -27,7 +27,8 @@ def get_user_list(request: HttpRequest):
     per_page = int(data.get("per_page", 30))
     page_index = int(data.get("page_index", 1))
 
-    paginator = Paginator(User.objects.all().order_by("id"), per_page)
+    users = User.objects.all().order_by("id")
+    paginator = Paginator(users, per_page)
     page_user = paginator.page(page_index)
 
     user_list = []
@@ -41,7 +42,8 @@ def get_user_list(request: HttpRequest):
             "has_next": page_user.has_next(),
             "has_previous": page_user.has_previous(),
             "page_index": page_index,
-            "page_total": paginator.num_pages
+            "page_total": paginator.num_pages,
+            "user_num": len(users)
         }
     )
 
@@ -60,7 +62,8 @@ def get_prompt_list(request: HttpRequest):
     per_page = int(data.get("per_page", 30))
     page_index = int(data.get("page_index", 1))
 
-    paginator = Paginator(Prompt.objects.all().order_by("-id"), per_page)
+    prompts = Prompt.objects.all().order_by("-id")
+    paginator = Paginator(prompts, per_page)
     page_prompt = paginator.page(page_index)
 
     prompt_list = []
@@ -74,7 +77,8 @@ def get_prompt_list(request: HttpRequest):
             "has_next": page_prompt.has_next(),
             "has_previous": page_prompt.has_previous(),
             "page_index": page_index,
-            "page_total": paginator.num_pages
+            "page_total": paginator.num_pages,
+            "prompt_num": len(prompts)
         }
     )
 
@@ -89,7 +93,6 @@ def get_audit_record_list(request: HttpRequest):
         per_page: user num per page, default 30
         status: 
     """
-
     data = request.GET.dict()
 
     per_page = int(data.get("per_page", 30))
