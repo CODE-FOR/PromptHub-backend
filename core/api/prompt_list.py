@@ -25,7 +25,7 @@ def search_prompt_keyword(request: HttpRequest):
     if models is None or len(models) == 0:
         prompt_list = Prompt.objects.filter(prompt__icontains=keyword, upload_status=LANCHED)
     else:
-        models = models.split("#")
+        models = models.split("_")
         complex_query = Q(model__icontains=models[0])
         for i in range(1, len(models)):
             complex_query = complex_query | Q(model__icontains=models[i])
