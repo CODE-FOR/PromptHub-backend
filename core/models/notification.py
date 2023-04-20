@@ -28,6 +28,7 @@ class Notification(models.Model):
 
     def simple_dict(self):
         data = {
+            "notification_id": self.id,
             "prompt_id": self.prompt.id,
             "prompt_upload_status": self.prompt.upload_status,
             "title": self.title,
