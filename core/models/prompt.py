@@ -35,7 +35,8 @@ class Prompt(models.Model):
             "id": self.id,
             "prompt": self.prompt,
             "picture": self.picture,
-            "collection_count": self.collection_count
+            "collection_count": self.collection_count,
+            "model": self.model,
         }
         return data
 
