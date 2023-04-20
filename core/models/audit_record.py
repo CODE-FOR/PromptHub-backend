@@ -21,6 +21,7 @@ class AuditRecord(models.Model):
 
     def to_dict(self):
         data = {
+            "audit_record_id": self.id,
             "user": self.user.simple_dict(),
             "prompt": self.prompt.simple_dict(),
             "created_at": self.created_at,
