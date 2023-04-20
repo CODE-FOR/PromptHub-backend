@@ -99,9 +99,9 @@ def get_audit_record_list(request: HttpRequest):
     page_index = int(data.get("page_index", 1))
     status = int(data.get("status", -1))
 
-    paginator = Paginator(AuditRecord.objects.filter(status=status).order_by("-id"), per_page) \
-                if status != -1 else \
-                Paginator(AuditRecord.objects.all().order_by("-id"), per_page)
+    audit_records = AuditRecord.objects.filter(status=status).order_by("-id") \
+                    if status != -1 else AuditRecord.objects.all().order_by("-id")
+    paginator = Paginator(audit_records, per_page) 
     page_audit_record = paginator.page(page_index)
 
     audit_record_list = []
@@ -115,7 +115,8 @@ def get_audit_record_list(request: HttpRequest):
             "has_next": page_audit_record.has_next(),
             "has_previous": page_audit_record.has_previous(),
             "page_index": page_index,
-            "page_total": paginator.num_pages
+            "page_total": paginator.num_pages,
+            "audit_record_num": len(audit_records)
         }
     )
 
@@ -188,7 +189,8 @@ def get_comment_list(request: HttpRequest):
     
     prompt = Prompt.objects.get(id=prompt_id)
 
-    paginator = Paginator(prompt.comment_list.all().order_by("created_at"), per_page)
+    comments = prompt.comment_list.all().order_by("created_at")
+    paginator = Paginator(comments, per_page)
     page_comments = paginator.page(page_index)
 
     comment_list = []
@@ -202,7 +204,8 @@ def get_comment_list(request: HttpRequest):
             "has_next": page_comments.has_next(),
             "has_previous": page_comments.has_previous(),
             "page_index": page_index,
-            "page_total": paginator.num_pages
+            "page_total": paginator.num_pages,
+            "comment_num": len(comments)
         }
     )
 

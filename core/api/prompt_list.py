@@ -1,6 +1,7 @@
 from django.http import HttpRequest
 from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
+from django.db.models import Q
 
 from core.models.prompt import Prompt, LANCHED
 import random
@@ -17,14 +18,19 @@ def search_prompt_keyword(request: HttpRequest):
     
     keyword = data.get("keyword")
     sorted_by = data.get("sorted_by", "hot") # hot / time
-    model = data.get("model", None)
+    models = data.get("models", None)
     per_page = int(data.get("per_page", 30))
     page_index = int(data.get("page_index", 1))
 
-    if model is None:
+    if models is None or len(models) == 0:
         prompt_list = Prompt.objects.filter(prompt__icontains=keyword, upload_status=LANCHED)
     else:
-        prompt_list = Prompt.objects.filter(prompt__icontains=keyword, model__icontains=model, upload_status=LANCHED)
+        models = models.split("#")
+        complex_query = Q(model__icontains=models[0])
+        for i in range(1, len(models)):
+            complex_query = complex_query | Q(model__icontains=models[i])
+        prompt_list = Prompt.objects.filter(prompt__icontains=keyword, upload_status=LANCHED).filter(complex_query)
+        
 
     if sorted_by == "hot":
         prompt_list = prompt_list.order_by("-collection_count")
