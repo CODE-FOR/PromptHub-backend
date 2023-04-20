@@ -120,6 +120,29 @@ def get_audit_record_list(request: HttpRequest):
         }
     )
 
+@response_wrapper
+@admin_jwt_auth()
+@require_http_methods("GET")
+def get_prompt(request: HttpRequest):
+    data = request.GET.dict()
+    if not data:
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
+    
+    prompt_id = int(data.get("prompt_id"))
+    if prompt_id is None:
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
+    if not Prompt.objects.filter(id=prompt_id).exists():
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, "作品不存在")
+    prompt = Prompt.objects.get(id=prompt_id)
+
+    return success_api_response(
+        msg="成功获得作品内容",
+        data={
+            "prompt": prompt.full_dict()
+        }
+    )
+
+
 
 @response_wrapper
 @admin_jwt_auth()

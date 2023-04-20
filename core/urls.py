@@ -54,6 +54,7 @@ urlpatterns = [
     path("admin/get_prompt_list", admin.get_prompt_list),
     path("admin/delete_comment", admin.delete_comment),
     path("admin/audit_prompt", admin.audit_prompt),
+    path("admin/get_prompt", admin.get_prompt),
 
     # prompt apis
     path("prompt/create_prompt", create_prompt),
