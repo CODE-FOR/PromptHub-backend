@@ -35,7 +35,7 @@ def search_prompt_keyword(request: HttpRequest):
     if sorted_by == "hot":
         prompt_list = prompt_list.order_by("-collection_count")
     else:
-        prompt_list = prompt_list.order_by("-created_by")
+        prompt_list = prompt_list.order_by("-created_at")
     
     paginator = Paginator(prompt_list, per_page)
     page_prompt = paginator.page(page_index)
