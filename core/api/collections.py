@@ -217,7 +217,7 @@ def get_collection_info(request: HttpRequest):
     collection_id = int(data.get("collection_id"))
     if not Collection.objects.filter(id=collection_id).exists():
         return failed_api_response(StatusCode.ID_NOT_EXISTS, "收藏夹不存在")
-    collection = Collection.objects.get(collection)
+    collection = Collection.objects.get(id=collection_id)
 
     if user != collection.user:
         return failed_api_response(StatusCode.BAD_REQUEST, "用户无权限")

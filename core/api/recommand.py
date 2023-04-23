@@ -4,7 +4,6 @@ import math as math
 import json
 import os
 import re
-from tkinter import *
 from core.models.prompt import Prompt
 from tqdm import tqdm
 
@@ -125,7 +124,6 @@ def get_sentence_similarity(input1, input2):
 
 
 def cal_score1(p,t,g):
-
     return  (p + 1) / (pow(t+2, g))
 
 

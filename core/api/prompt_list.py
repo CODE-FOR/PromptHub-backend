@@ -9,6 +9,7 @@ import random
 
 from .auth import get_user_from_token
 from .utils import StatusCode, response_wrapper, success_api_response, failed_api_response
+from core.api.recommand import get_recommand_prompt_dict
 
 @response_wrapper
 @require_http_methods("GET")
@@ -86,7 +87,6 @@ def hot_prompt_list(request: HttpRequest):
         }
     )
 
-from core.api.recommand import get_recommand_prompt_dict
 @response_wrapper
 @require_http_methods("GET")
 def personized_prompt_list(request: HttpRequest):
@@ -110,7 +110,8 @@ def personized_prompt_list(request: HttpRequest):
             collect_record_prompts = collect_record_prompts.\
                 union(collect_record.prompt for collect_record in collection.collect_record_list.all())
         lastest_collected_prompts = sorted(collect_record_prompts, key=lambda t: t.created_at, reverse=True)[:10]
-        lastest_viewed_propmts = [history.prompt for history in list(History.objects.filter(user=user).order_by("-created_at"))[:10]]
+        lastest_viewed_propmts = [history.prompt for history in \
+                                  list(History.objects.filter(user=user).order_by("-created_at"))[:10]]
         lastest_prompts = set(lastest_collected_prompts).union(lastest_viewed_propmts)
         recommend_prompts = get_recommand_prompt_dict()
         recommand_prompt_set = set()
