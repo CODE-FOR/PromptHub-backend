@@ -183,13 +183,18 @@ def change_nickname(request: HttpRequest):
         return failed_parse_data_response()
     
     new_nickname = data.get("new_nickname")
-    if not new_nickname:
+    user_id = data.get("user_id")
+    if not new_nickname or not user_id:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
     
     if User.objects.exists(nickname=new_nickname):
         return failed_api_response(StatusCode.CONFLICT, "昵称已经被使用了，换一个吧")
-    
+
     user = request.user
+
+    if user.id != user_id:
+        return failed_api_response(StatusCode.FORBIDDEN, "无权限")
+
     user.nickname = new_nickname
     user.save()
 
@@ -204,10 +209,15 @@ def change_avatar(request: HttpRequest):
         return failed_parse_data_response()
     
     new_avatar = data.get("new_avatar")
+    user_id = data.get("user_id")
     if not new_avatar:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
     
     user = request.user
+
+    if user.id != user_id:
+        return failed_api_response(StatusCode.FORBIDDEN, "无权限")
+
     user.avatar = new_avatar
     user.save()
 
