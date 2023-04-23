@@ -196,7 +196,7 @@ def change_nickname(request: HttpRequest):
     return success_api_response(msg="修改昵称成功")
 
 @response_wrapper
-@user_jwt_auth
+@user_jwt_auth()
 @require_http_methods("POST")
 def change_avatar(request: HttpRequest):
     data = parse_data(request)
