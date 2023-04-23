@@ -187,12 +187,12 @@ def change_nickname(request: HttpRequest):
     if not new_nickname or not user_id:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
     
-    if User.objects.exists(nickname=new_nickname):
+    if User.objects.filter(nickname=new_nickname).exists():
         return failed_api_response(StatusCode.CONFLICT, "昵称已经被使用了，换一个吧")
 
     user = request.user
 
-    if user.id != user_id:
+    if user.id != int(user_id):
         return failed_api_response(StatusCode.FORBIDDEN, "无权限")
 
     user.nickname = new_nickname
@@ -215,7 +215,7 @@ def change_avatar(request: HttpRequest):
     
     user = request.user
 
-    if user.id != user_id:
+    if user.id != int(user_id):
         return failed_api_response(StatusCode.FORBIDDEN, "无权限")
 
     user.avatar = new_avatar
