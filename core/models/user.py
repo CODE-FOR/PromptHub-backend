@@ -1,6 +1,20 @@
 from django.db import models
+import random
 
-DEFAULT_AVATAR = "https://s1.ax1x.com/2023/03/29/ppcWN24.jpg"
+def get_default_avatar():
+    default_avatars = [
+        "https://s1.ax1x.com/2023/04/23/p9e3H5d.jpg",
+        "https://s1.ax1x.com/2023/04/23/p9e3vKf.jpg",
+        "https://s1.ax1x.com/2023/04/23/p9e37UH.jpg",
+        "https://s1.ax1x.com/2023/04/23/p9e3IbD.jpg",
+        "https://s1.ax1x.com/2023/04/23/p9e3TVe.jpg",
+        "https://s1.ax1x.com/2023/04/23/p9e3O2t.jpg",
+        "https://s1.ax1x.com/2023/04/23/p9e3L8I.jpg",
+        "https://s1.ax1x.com/2023/04/23/p9e8pVg.jpg",
+        "https://s1.ax1x.com/2023/04/23/p9e3zqS.jpg",
+        "https://s1.ax1x.com/2023/03/29/ppcWN24.jpg",
+    ]
+    return default_avatars[random.randint(0, len(default_avatars) - 1)]
 
 class User(models.Model):
     """
@@ -17,7 +31,7 @@ class User(models.Model):
     password = models.CharField(max_length=256)
     nickname = models.CharField(max_length=256)
     
-    avatar = models.URLField(default=DEFAULT_AVATAR)
+    avatar = models.URLField(default=get_default_avatar())
     is_confirmed = models.BooleanField(default=False)
     is_banned = models.BooleanField(default=False)
 
