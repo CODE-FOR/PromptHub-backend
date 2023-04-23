@@ -174,5 +174,41 @@ def change_password(request: HttpRequest):
     user.save()
     return success_api_response(msg="修改密码成功")
 
+@response_wrapper
+@user_jwt_auth()
+@require_http_methods("POST")
+def change_nickname(request: HttpRequest):
+    data = parse_data(request)
+    if data is None:
+        return failed_parse_data_response()
+    
+    new_nickname = data.get("new_nickname")
+    if not new_nickname:
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
+    
+    if User.objects.exists(nickname=new_nickname):
+        return failed_api_response(StatusCode.CONFLICT, "昵称已经被使用了，换一个吧")
+    
+    user = request.user
+    user.nickname = new_nickname
+    user.save()
 
+    return success_api_response(msg="修改昵称成功")
 
+@response_wrapper
+@user_jwt_auth
+@require_http_methods("POST")
+def change_avatar(request: HttpRequest):
+    data = parse_data(request)
+    if data is None:
+        return failed_parse_data_response()
+    
+    new_avatar = data.get("new_avatar")
+    if not new_avatar:
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
+    
+    user = request.user
+    user.avatar = new_avatar
+    user.save()
+
+    return success_api_response(msg="头像昵称成功")
