@@ -19,7 +19,7 @@ from core.api.notification import get_notification_list, delete_notification, up
 from core.api.prompt_list import search_prompt_keyword, hot_prompt_list, personized_prompt_list
 from core.api.user import follow, get_published_prompt_list, get_audit_record_list, delete_audit_record, \
     get_user_following_num, get_user_following_list, get_user_follower_num, get_user_follower_list, \
-    get_published_prompt_num
+    get_published_prompt_num, is_following
 from core.api.upload import get_qiniu_token
 
 urlpatterns = [
@@ -49,6 +49,7 @@ urlpatterns = [
     path("user/get_published_prompt_list", get_published_prompt_list),
     path("user/get_audit_record_list", get_audit_record_list),
     path("user/delete_audit_record", delete_audit_record),
+    path("user/is_following", is_following),
 
     # admin apis
     path("admin/get_user_list", admin.get_user_list),

@@ -6,7 +6,7 @@ from core.models.prompt import Prompt, LANCHED
 from core.models.user import User, UserFollowing
 from core.models.audit_record import AuditRecord
 
-from .auth import user_jwt_auth
+from .auth import user_jwt_auth, get_user_from_token
 from .utils import StatusCode, response_wrapper, success_api_response, failed_api_response, \
                    parse_data, failed_parse_data_response
 
@@ -295,5 +295,33 @@ def delete_audit_record(request: HttpRequest):
         msg="成功删除该评审记录",
         data = {
             "audit_record_id": audit_record_id
+        }
+    )
+
+@response_wrapper
+@require_http_methods("GET")
+def is_following(request: HttpRequest):
+    data = request.GET.dict()
+    if not data:
+        return failed_api_response(StatusCode.BAD_REQUEST, error_msg="参数不完整")
+    
+    target_user_id = data.get("target_user_id", None)
+
+    user = get_user_from_token(request)
+    user_id = -1 if user is None else user.id
+
+    if not User.objects.filter(id=target_user_id).exists():
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, error_msg="用户不存在")
+    
+    target_user = User.objects.get(id=target_user_id)
+
+    is_following = False if user_id == -1 \
+        else UserFollowing.objects.filter(user=user, following_user=target_user).exists()
+    
+    return success_api_response(
+        msg="获取成功",
+        data={
+            "is_following": is_following,
+            "target_user_id": target_user_id
         }
     )

@@ -221,4 +221,4 @@ def change_avatar(request: HttpRequest):
     user.avatar = new_avatar
     user.save()
 
-    return success_api_response(msg="头像昵称成功")
+    return success_api_response(msg="头像修改成功")
