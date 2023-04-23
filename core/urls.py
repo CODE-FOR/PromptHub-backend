@@ -7,7 +7,7 @@ from django.urls import path
 import core.api.admin as admin
 from core.api.auth import user_obtain_jwt_token, admin_obtain_jwt_token, refresh_jwt_token
 from core.api.account_manage import sign_up, get_user_simple_dict, confirm_and_create, forget_password, confirm_forget_password, \
-    change_password
+    change_password, modify_user_info
 from core.api.prompt import create_prompt, edit_prompt, delete_prompt, get_prompt, get_editing_prompt
 from core.api.comment import create_comment, delete_comment, get_comment_list
 from core.api.history import get_history_list, delete_history
@@ -35,6 +35,7 @@ urlpatterns = [
     path("user/forget_password", forget_password),
     path("user/confirm_forget_password", confirm_forget_password),
     path("user/change_password", change_password),
+    path("user/modify_user_info", modify_user_info),
 
     # user profile apis
     path("user/follow", follow),

@@ -26,7 +26,35 @@ def get_user_simple_dict(request: HttpRequest):
     return success_api_response(msg="成功获取名字", data={
         "user": user.simple_dict()
     })
-        
+
+@response_wrapper
+@user_jwt_auth()
+@require_http_methods("POST")
+def modify_user_info(request: HttpRequest):
+    data = parse_data(request)
+    if data is None:
+        return failed_parse_data_response()
+    
+    nickname = data.get("nickname")
+    avatar = data.get("avatar")
+    user: User = request.user
+
+    if nickname is None or avatar is None:
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
+    avatar = avatar.replace("img/", "")
+    avatar = "img/" + avatar
+    
+    user.nickname = nickname
+    user.avatar = avatar
+    user.save()
+
+    return success_api_response(
+        msg="用户信息修改成功",
+        data={
+            "user": user.simple_dict()
+        }
+    )
+
 @response_wrapper
 @require_http_methods("POST")
 def sign_up(request: HttpRequest):
