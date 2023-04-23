@@ -16,6 +16,7 @@ def make_confirm_code(email: str):
         confirm_code = ConfirmCode.objects.get(email=email)
         confirm_code.code = code
         confirm_code.expire_at = expire_at
+        confirm_code.is_used = False
         confirm_code.save()
     else:
         ConfirmCode.objects.create(email=email, code=code, expire_at=expire_at, is_used=False)
