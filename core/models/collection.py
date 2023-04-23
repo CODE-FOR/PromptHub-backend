@@ -17,6 +17,14 @@ class Collection(models.Model):
     visibility = models.IntegerField(choices=VISIBILITY_STATUS_CHOICES)
     cover = models.URLField(default="http://rsj4gl54w.hb-bkt.clouddn.com/1.png")
 
+    def simple_dict(self):
+        data = {
+            "id": self.id,
+            "name": self.name,
+            "visibility": self.visibility
+        }
+        return data
+    
     def full_dict(self):
         data = {
             "id": self.id,

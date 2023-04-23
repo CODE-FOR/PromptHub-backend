@@ -68,6 +68,9 @@ def add_to_collection(request: HttpRequest):
 
     if not check_data(prompt, collection):
         return failed_api_response(StatusCode.ID_NOT_EXISTS, "无法收藏，数据异常")
+    
+    if user != collection.user:
+        return failed_api_response(StatusCode.BAD_REQUEST, "用户无权限")
 
     CollectRecord.objects.create(prompt=prompt, collection=collection)
     
@@ -90,6 +93,7 @@ def remove_from_collection(request: HttpRequest):
     if data is None:
         return failed_parse_data_response()
 
+    user = request.user
     id = data.get("id")
 
     if not check_data(id):
@@ -97,6 +101,9 @@ def remove_from_collection(request: HttpRequest):
 
     if not CollectRecord.objects.filter(id=id).exists():
         return failed_api_response(StatusCode.ID_NOT_EXISTS, "收藏记录不存在")
+    
+    if user != CollectRecord.collection.user:
+        return failed_api_response(StatusCode.BAD_REQUEST, "用户无权限")
     
     collectRecord = CollectRecord.objects.get(id=id)
     prompt = collectRecord.prompt
@@ -110,7 +117,6 @@ def remove_from_collection(request: HttpRequest):
 '''
     create a new collection
 '''
-
 @response_wrapper
 @user_jwt_auth()
 @require_http_methods("POST")
@@ -129,7 +135,7 @@ def create_collection(request: HttpRequest):
     if len(name) > 50:
         return failed_api_response(StatusCode.BAD_REQUEST, "名字过长")
 
-    if Collection.objects.filter(name=name,user = user).exists():
+    if Collection.objects.filter(name=name, user=user).exists():
         return failed_api_response(StatusCode.CONFLICT, "不可以使用重复的名字")
 
     Collection.objects.create(name=name, user=user, visibility=visibility)
@@ -155,8 +161,11 @@ def delete_collection(request: HttpRequest):
 
     if not Collection.objects.filter(id=collection_id, user=user).exists():
         return failed_api_response(StatusCode.ID_NOT_EXISTS, "数据异常")
-
     collection = Collection.objects.get(id=collection_id)
+
+    if user != collection.user:
+        return failed_api_response(StatusCode.BAD_REQUEST, "用户无权限")
+    
     collection.delete()
     return success_api_response(msg="成功删除收藏夹")
 
@@ -176,22 +185,49 @@ def mod_collection(request: HttpRequest):
     collection_id = data.get("id")
     name = data.get("name")
     visibility = data.get("visibility")
+    collection = Collection.objects.get(id=collection_id)
 
     if not check_data(collection_id, name, visibility):
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
 
+    if user != collection.user:
+        return failed_api_response(StatusCode.BAD_REQUEST, "用户无权限")
+    
     if len(name) > 50:
         return failed_api_response(StatusCode.BAD_REQUEST, "名字过长")
 
     if Collection.objects.filter(name=name, user=user).exists():
         return failed_api_response(StatusCode.CONFLICT, "不可以使用重复的名字")
 
-    collection = Collection.objects.get(id=collection_id)
     collection.name = name
     collection.visibility = visibility
     collection.save()
 
     return success_api_response(msg="成功更新收藏夹信息")
+
+@response_wrapper
+@user_jwt_auth()
+@require_http_methods("GET")
+def get_collection_info(request: HttpRequest):
+    data = request.GET.dict()
+    if not data:
+        return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
+    
+    user = request.user
+    collection_id = int(data.get("collection_id"))
+    if not Collection.objects.filter(id=collection_id).exists():
+        return failed_api_response(StatusCode.ID_NOT_EXISTS, "收藏夹不存在")
+    collection = Collection.objects.get(collection)
+
+    if user != collection.user:
+        return failed_api_response(StatusCode.BAD_REQUEST, "用户无权限")
+
+    return success_api_response(
+        msg="成功获取收藏夹信息",
+        data={
+            "collection_info": collection.simple_dict()
+        }
+    )
 
 @response_wrapper
 @require_http_methods("GET")

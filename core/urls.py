@@ -13,7 +13,7 @@ from core.api.comment import create_comment, delete_comment, get_comment_list
 from core.api.history import get_history_list, delete_history
 from core.api.collections import add_to_collection, create_collection, \
     delete_collection, mod_collection, remove_from_collection, get_collection_list, get_collection_record_list, \
-    get_user_prompt_collection_relation, manage_collection_records
+    get_user_prompt_collection_relation, manage_collection_records, get_collection_info
 from core.api.notification import get_notification_list, delete_notification, update_notification, \
     get_unread_notification_num
 from core.api.prompt_list import search_prompt_keyword, hot_prompt_list, personized_prompt_list
@@ -78,6 +78,7 @@ urlpatterns = [
     path("collection/delete_collection", delete_collection),
     path("collection/modify_collection", mod_collection),
     path("collection/get_collection_list", get_collection_list),
+    path("collection/get_collection_info", get_collection_info),
     # collection apis —— for item
     path("collection/manage_collection_records", manage_collection_records),
     path("collection/add_to_collection", add_to_collection),
