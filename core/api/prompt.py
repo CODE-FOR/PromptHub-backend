@@ -72,6 +72,8 @@ def edit_prompt(request: HttpRequest):
     
     prompt = data.get("prompt")
     picture = data.get("picture")
+    picture = picture.replace("img/", "")
+    picture = "img/" + picture
     model = data.get("model")
     width = data.get("width")
     height = data.get("height")
