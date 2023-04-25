@@ -101,11 +101,11 @@ def remove_from_collection(request: HttpRequest):
 
     if not CollectRecord.objects.filter(id=id).exists():
         return failed_api_response(StatusCode.ID_NOT_EXISTS, "收藏记录不存在")
-    
-    if user != CollectRecord.collection.user:
+    collectRecord = CollectRecord.objects.get(id=id)
+
+    if user != collectRecord.collection.user:
         return failed_api_response(StatusCode.BAD_REQUEST, "用户无权限")
     
-    collectRecord = CollectRecord.objects.get(id=id)
     prompt = collectRecord.prompt
     prompt.collection_count = prompt.collection_count - 1
     prompt.save()
