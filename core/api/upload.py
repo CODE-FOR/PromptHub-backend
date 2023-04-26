@@ -13,7 +13,7 @@ import string
 ACCESS_KEY = 'brBbvVREpU769zgt11LTupGnPcO-5mtjB1WiNQu1'
 SECRET_KEY = 'vasZWenWl_tzbDMOwbBOLCG5lUAJDN0KWGjhINFa'
 QURIFY = Auth(ACCESS_KEY, SECRET_KEY)
-BUCKET_NAME =  "prompthub"
+BUCKET_NAME =  "prompthub2"
 
 
 @response_wrapper

@@ -113,8 +113,10 @@ def personized_prompt_list(request: HttpRequest):
         lastest_viewed_propmts = [history.prompt for history in \
                                   list(History.objects.filter(user=user).order_by("-created_at"))[:10]]
         lastest_prompts = set(lastest_collected_prompts).union(lastest_viewed_propmts)
-        recommend_prompts = get_recommand_prompt_dict()
+        
         recommand_prompt_set = set()
+        # 1. related prompts
+        recommend_prompts = get_recommand_prompt_dict()
         for prompt in lastest_prompts:
             recommend_top_prompt_ids = recommend_prompts.get(str(prompt.id), None)
             if recommend_top_prompt_ids is None:
@@ -126,6 +128,13 @@ def personized_prompt_list(request: HttpRequest):
                 recommand_top_prompt_list.append(Prompt.objects.get(id=prompt_id))
             recommand_prompt_set = recommand_prompt_set.union(recommand_top_prompt_list)
         prompt_list = list(recommand_prompt_set)
+        # 2. random prompts: 200
+        unsampled_prompt_list = Prompt.objects.filter(upload_status=LANCHED)
+        count = 200
+        random.seed(100)
+        random_list = random.sample(range(0, count), count)
+        random_prompt_list = [unsampled_prompt_list[index] for index in random_list][:count]
+        prompt_list.extend(random_prompt_list)
     
     paginator = Paginator(prompt_list, per_page)
     page_prompt = paginator.page(page_index)
