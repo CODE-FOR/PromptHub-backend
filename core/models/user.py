@@ -3,16 +3,16 @@ import random
 
 def get_default_avatar():
     default_avatars = [
-        "https://s1.ax1x.com/2023/04/23/p9e3H5d.jpg",
-        "https://s1.ax1x.com/2023/04/23/p9e3vKf.jpg",
-        "https://s1.ax1x.com/2023/04/23/p9e37UH.jpg",
-        "https://s1.ax1x.com/2023/04/23/p9e3IbD.jpg",
-        "https://s1.ax1x.com/2023/04/23/p9e3TVe.jpg",
-        "https://s1.ax1x.com/2023/04/23/p9e3O2t.jpg",
-        "https://s1.ax1x.com/2023/04/23/p9e3L8I.jpg",
-        "https://s1.ax1x.com/2023/04/23/p9e8pVg.jpg",
-        "https://s1.ax1x.com/2023/04/23/p9e3zqS.jpg",
-        "https://s1.ax1x.com/2023/03/29/ppcWN24.jpg",
+        "https://image.lexica.art/full_jpg/d79768c4-fe89-4099-874d-87b7a77ecc24",
+        "https://image.lexica.art/full_jpg/314c275a-2108-4766-9b34-a33396e3402a",
+        "https://image.lexica.art/full_jpg/73b59d28-2383-4537-b263-3f9177c60a86",
+        "https://image.lexica.art/full_jpg/d7256b0f-5901-4792-a2f6-f4d01051c849",
+        "https://image.lexica.art/full_jpg/2d45709c-30c9-43ee-95da-e99785b887bb",
+        "https://image.lexica.art/full_jpg/287d0cef-2af6-4a2c-a9d9-7d9843719f72",
+        "https://image.lexica.art/full_jpg/d4cd3ce3-8ef9-453d-80e4-779943b67b77",
+        "https://image.lexica.art/full_jpg/2c6e89b4-3e57-423f-8336-28c01610ac43",
+        "https://image.lexica.art/full_jpg/d07e6bc9-8aab-40d5-b0eb-a8de91dc632b",
+        "https://image.lexica.art/full_jpg/8b164e89-c29e-4182-901c-22f888d1ccbb",
     ]
     return default_avatars[random.randint(0, len(default_avatars) - 1)]
 
