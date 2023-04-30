@@ -56,7 +56,11 @@ def parse_data(request: HttpRequest):
     """
     try:
         return json.loads(request.body.decode("utf-8"))
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        print(request.body.decode("utf-8"))
+        print(e)
+        print(e.msg)
+
         return None
 
 def check_data(*args):

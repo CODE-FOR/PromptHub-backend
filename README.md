@@ -20,6 +20,19 @@ $ python manage.py runserver
 
 * ruff check and fix
 
+```shell
+$ ruff check . --fix
 ```
-ruff check . --fix
+
+* unittest 
+
+```shell
+$ python manage.py test tests
+```
+
+* coverage
+
+```shell
+$ coverage python manage.py test tests
+$ coverage html
 ```

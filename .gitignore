@@ -10,3 +10,7 @@ db.sqlite3
 
 # this is lzw's virtualenv dir, do not delete it
 back/
+
+# following item are used for coverage report of test
+.coverage
+
