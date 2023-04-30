@@ -3,8 +3,9 @@ from unittest import TestCase
 from django.test.client import Client
 from django.urls import reverse
 
-from core.api.auth import generate_access_token, ACCOUNT_TYPE_USER
+from core.api.auth import generate_access_token, generate_refresh_token, ACCOUNT_TYPE_USER, ACCOUNT_TYPE_ADMIN
 from core.models.user import User
+from core.models.admin import Admin
 from tests.mock_data_set import DataSet
 
 from rest_framework.test import APIClient
@@ -71,14 +72,26 @@ class TestClient:
         TestCase().assertNotEquals(response, "")
         return self
 
-    def with_user_token(self, name):
+    def with_user_token(self, email):
         self.enable_token = True
-        user = User.objects.get(nickname=name)
+        user = User.objects.get(email=email)
         if user is None:
             TestCase().fail("internal error -> can not obtain token")
         self.token = generate_access_token(user.id, ACCOUNT_TYPE_USER)
         return self
 
-    def with_admin_token(self, name):
-        print("try to get admin token: " + name)
+    def with_admin_token(self, username):
+        self.enable_token = True
+        admin = Admin.objects.get(username=username)
+        if admin is None:
+            TestCase().fail("internal error -> can not obtain token")
+        self.token = generate_access_token(admin.id, ACCOUNT_TYPE_ADMIN)
+        return self
+    
+    def with_admin_refresh_token(self, username):
+        self.enable_token = True
+        admin = Admin.objects.get(username=username)
+        if admin is None:
+            TestCase().fail("internal error -> can not obtain token")
+        self.token = generate_refresh_token(admin.id, ACCOUNT_TYPE_ADMIN)
         return self

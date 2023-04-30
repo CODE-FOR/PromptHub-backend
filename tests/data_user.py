@@ -1,21 +1,20 @@
 from core.models.user import User
 from tests.mock_data_set import DataProvider
 
-CORRECT_ACCOUNT_EMAIL = "test@test.com"
-CORRECT_ACCOUNT_PASSWORD = "test"
-CORRECT_NICK_NAME = "test_1"
+USER_EMAIL = "test@test.com"
+USER_PASSWORD = "test"
+USER_NICKNAME = "test_1"
+USER_AVATAR = "user_avatar.jpg"
 
 
 class UserTestData(DataProvider):
-
     def set_data(self):
         User.objects.create(
-            email=CORRECT_ACCOUNT_EMAIL,
-            password=CORRECT_ACCOUNT_PASSWORD,
+            email=USER_EMAIL,
+            password=USER_PASSWORD,
             nickname="test_1",
             is_confirmed=False,
         )
-
 
 class UserTestDataNotConfirmed(DataProvider):
     def set_data(self):
@@ -25,7 +24,6 @@ class UserTestDataNotConfirmed(DataProvider):
             nickname="test_not_confirmed",
             is_confirmed=False,
         )
-
 
 class UserTestDataGotBanned(DataProvider):
     def set_data(self):
