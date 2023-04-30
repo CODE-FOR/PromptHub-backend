@@ -3,7 +3,11 @@ from unittest import TestCase
 from django.test.client import Client
 from django.urls import reverse
 
+from core.api.auth import generate_access_token, ACCOUNT_TYPE_USER
+from core.models.user import User
 from tests.mock_data_set import DataSet
+
+from rest_framework.test import APIClient
 
 POST = 0
 GET = 1
@@ -19,11 +23,13 @@ HTTP_METHOD = (
 
 
 class TestClient:
-    _client = Client()
+    _client = APIClient()
 
     status_code = -1
     content = ""
-    content_type = "application/json"
+    content_type = "json"
+    token = ""
+    enable_token = False
 
     def __init__(self, data):
         if data is None:
@@ -45,10 +51,14 @@ class TestClient:
         return self
 
     def do_request(self, router, method_type, json):
+        if self.enable_token:
+            self._client.credentials(
+                HTTP_AUTHORIZATION='Bearer ' + self.token)
         actual_router = reverse(router)
         response = ""
         if method_type == POST:
-            response = self._client.post(actual_router, json, self.content_type)
+            response = self._client.post(
+                actual_router, json, self.content_type)
         if method_type == GET:
             response = self._client.get(actual_router, json)
         if method_type == DELETE:
@@ -59,4 +69,16 @@ class TestClient:
         self.status_code = response.status_code
         self.content = response.content.decode('unicode-escape')
         TestCase().assertNotEquals(response, "")
+        return self
+
+    def with_user_token(self, name):
+        self.enable_token = True
+        user = User.objects.get(nickname=name)
+        if user is None:
+            TestCase().fail("internal error -> can not obtain token")
+        self.token = generate_access_token(user.id, ACCOUNT_TYPE_USER)
+        return self
+
+    def with_admin_token(self, name):
+        print("try to get admin token: " + name)
         return self

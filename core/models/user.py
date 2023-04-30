@@ -30,7 +30,7 @@ class User(models.Model):
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=256)
     nickname = models.CharField(max_length=256)
-    
+
     avatar = models.URLField(default=get_default_avatar())
     is_confirmed = models.BooleanField(default=False)
     is_banned = models.BooleanField(default=False)

@@ -3,6 +3,7 @@ from tests.mock_data_set import DataProvider
 
 CORRECT_ACCOUNT_EMAIL = "test@test.com"
 CORRECT_ACCOUNT_PASSWORD = "test"
+CORRECT_NICK_NAME = "test_1"
 
 
 class UserTestData(DataProvider):
