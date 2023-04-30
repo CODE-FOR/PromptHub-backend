@@ -6,5 +6,5 @@ class Admin(models.Model):
         username:
         password:
     """
-    username = models.CharField(max_length=256)
+    username = models.CharField(unique=True, max_length=256)
     password = models.CharField(max_length=256)
