@@ -20,9 +20,9 @@ def get_user_simple_dict(request: HttpRequest):
     id = data.get("id")
     if id is None:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
-    user = User.objects.get(id=id)
-    if user is None:
+    if not User.objects.filter(id=id).exists():
         return failed_api_response(StatusCode.ID_NOT_EXISTS, "没有此用户")
+    user = User.objects.get(id=id)
     return success_api_response(msg="成功获取名字", data={
         "user": user.simple_dict()
     })
