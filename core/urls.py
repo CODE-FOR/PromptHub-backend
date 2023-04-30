@@ -36,9 +36,9 @@ urlpatterns = [
     path("auth/user_obtain_token", user_obtain_jwt_token,
          name="auth_user_obtain_token"),
     path("auth/admin_obtain_token", admin_obtain_jwt_token,
-         name="auth_admin_obtain_jwt_token"),
+         name="auth_admin_obtain_token"),
     path("auth/refresh_token", refresh_jwt_token,
-         name="auth_refresh_jwt_token"),
+         name="auth_refresh_token"),
 
     # account apis
     path("user/get_user_simple_dict", get_user_simple_dict,
