@@ -16,6 +16,14 @@ class UserTestData(DataProvider):
             is_confirmed=False,
         )
 
+class UserTestTwoData(DataProvider):
+    def set_data(self):
+        User.objects.create(
+            email="test_2@test.com",
+            password="test_2",
+            nickname="test_2"
+        )
+
 class UserTestDataNotConfirmed(DataProvider):
     def set_data(self):
         User.objects.create(

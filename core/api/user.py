@@ -89,7 +89,7 @@ def get_user_following_list(request: HttpRequest):
     per_page = int(data.get("per_page", 30))
     page_index = int(data.get("page_index", 1))
 
-    paginator = Paginator(user.following.all(), per_page)
+    paginator = Paginator(user.following.all().order_by("id"), per_page)
     page_following = paginator.page(page_index)
 
     following_list = []
@@ -143,7 +143,7 @@ def get_user_follower_list(request: HttpRequest):
     per_page = int(data.get("per_page", 30))
     page_index = int(data.get("page_index", 1))
 
-    paginator = Paginator(user.followers.all(), per_page)
+    paginator = Paginator(user.followers.all().order_by("id"), per_page)
     page_follower = paginator.page(page_index)
 
     follower_list = []

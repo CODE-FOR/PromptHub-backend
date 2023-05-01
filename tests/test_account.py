@@ -6,7 +6,7 @@ SIGN_UP_USER_EMAIL = "sign_up@sign.up"
 SIGN_UP_USER_PASSWORD = "sign_up"
 SIGN_UP_USER_NICKNAME = "sign_up"
 
-class UserModelTestCase(TestCase):
+class AccountModelTestCase(TestCase):
     def setUp(self):
         self.data = DataSet(UserTestData())
         self.client = TestClient(self.data)

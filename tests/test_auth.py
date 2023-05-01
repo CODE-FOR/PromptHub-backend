@@ -3,7 +3,7 @@ from tests.data_admin import *
 from tests.data_user import *
 
 
-class UserModelTestCase(TestCase):
+class AuthModelTestCase(TestCase):
     def setUp(self):
         self.data = DataSet(AdminTestData(), 
                             UserTestData(), 
