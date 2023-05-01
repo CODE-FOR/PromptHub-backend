@@ -106,7 +106,7 @@ urlpatterns = [
 
     # history apis
     path("history/get_history_list", get_history_list,
-         name="histoy_get_history_list"),
+         name="history_get_history_list"),
     path("history/delete_history", delete_history,
          name="history_delete_history"),
 
