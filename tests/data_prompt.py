@@ -85,3 +85,13 @@ class PromptForCollectionTestData(DataProvider):
             upload_status=LANCHED,
             prompt_attribute=""
         )
+        Prompt.objects.create(
+            prompt="prompt_for_collection2",
+            picture="picture.jpg",
+            model="model",
+            width=512,
+            height=512,
+            uploader=user,
+            upload_status=LANCHED,
+            prompt_attribute=""
+        )

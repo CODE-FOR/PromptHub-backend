@@ -6,6 +6,9 @@ USER_PASSWORD = "test"
 USER_NICKNAME = "test_1"
 USER_AVATAR = "user_avatar.jpg"
 
+USER_EMAIL2 = "test_2@test.com"
+USER_NICKNAME2 = "test_2"
+
 
 class UserTestData(DataProvider):
     def set_data(self):

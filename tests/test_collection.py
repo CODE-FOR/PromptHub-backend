@@ -23,16 +23,22 @@ class CollectionTestCase(TestCase):
         ).check_contains("成功").check_code(200)
 
     def test_create_collection_already(self):
+        user = User.objects.get(nickname=USER_NICKNAME)
+        Collection.objects.create(name='public_collection_2', user=user,
+                                  visibility=0)
         self.client.with_user_token(USER_EMAIL).do_request(
             "collection_create_collection",
             POST, {
-                'name': 'public_collection_1',
+                'name': 'public_collection_2',
                 'visibility': 0,
             }
         ).check_contains("重复的名字").check_code(409)
 
     def test_delete_collection(self):
-        id = Collection.objects.get(name="public_collection_1").id
+        user = User.objects.get(nickname=USER_NICKNAME)
+        Collection.objects.create(name='public_collection_6', user=user,
+                                  visibility=0)
+        id = Collection.objects.get(name="public_collection_6").id
         self.client.with_user_token(USER_EMAIL).do_request(
             "collection_delete_collection",
             POST, {
@@ -116,3 +122,58 @@ class CollectionTestCase(TestCase):
         ).check_contains('成功').check_code(200)
         collection = Collection.objects.get(name='abc_def_test_pub_2')
         self.assertEquals(collection.visibility, 1)
+
+    def test_collection_manage_collection_records(self):
+        user = User.objects.get(nickname=USER_NICKNAME)
+        col1 = Collection.objects.create(name='test_collection_1', user=user,
+                                         visibility=1)
+        col2 = Collection.objects.create(name='test_collection_2', user=user,
+                                         visibility=1)
+        col3 = Collection.objects.create(name='test_collection_3', user=user,
+                                         visibility=1)
+        prompt = Prompt.objects.get(prompt='prompt_for_collection')
+        self.client.with_user_token(USER_EMAIL).do_request(
+            "collection_manage_collection_records",
+            POST, {
+                'prompt_id': prompt.id,
+                'collection_list': [
+                    {
+                        "collection_id": col1.id,
+                        "is_in": True,
+                    },
+                    {
+                        "collection_id": col2.id,
+                        "is_in": False,
+                    }, {
+                        "collection_id": col3.id,
+                        "is_in": True,
+                    }
+                ]
+            }
+        ).check_code(200).check_contains('成功')
+
+        self.assertTrue(len(CollectRecord.objects.filter(prompt=prompt,
+                                                         collection=col1)) > 0)
+        self.assertTrue(len(CollectRecord.objects.filter(prompt=prompt,
+                                                         collection=col2)) == 0)
+        self.assertTrue(len(CollectRecord.objects.filter(prompt=prompt,
+                                                         collection=col3)) > 0)
+
+    def test_get_user_prompt_collection_relation(self):
+        user = User.objects.get(nickname=USER_NICKNAME)
+        col1 = Collection.objects.create(name='test_collection_1', user=user,
+                                         visibility=1)
+        col2 = Collection.objects.create(name='test_collection_2', user=user,
+                                         visibility=1)
+        col3 = Collection.objects.create(name='test_collection_3', user=user,
+                                         visibility=1)
+        prompt = Prompt.objects.get(prompt='prompt_for_collection2')
+        CollectRecord.objects.create(prompt=prompt, collection=col1)
+        CollectRecord.objects.create(prompt=prompt, collection=col3)
+        self.client.with_user_token(USER_EMAIL).do_request(
+            'collection_get_user_prompt_collection_relation',
+            GET,
+            {
+                "prompt_id": prompt.id
+            }
+        ).check_code(200).check_contains('成功').check_contains('test_collection_1')
