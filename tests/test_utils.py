@@ -1,14 +1,13 @@
 from unittest import TestCase
 
-from django.test.client import Client
 from django.urls import reverse
-
-from core.api.auth import generate_access_token, generate_refresh_token, ACCOUNT_TYPE_USER, ACCOUNT_TYPE_ADMIN
-from core.models.user import User
-from core.models.admin import Admin
-from tests.mock_data_set import DataSet
-
 from rest_framework.test import APIClient
+
+from core.api.auth import generate_access_token, generate_refresh_token, \
+    ACCOUNT_TYPE_USER, ACCOUNT_TYPE_ADMIN
+from core.models.admin import Admin
+from core.models.user import User
+from tests.mock_data_set import DataSet
 
 POST = 0
 GET = 1
@@ -51,6 +50,19 @@ class TestClient:
         TestCase().assertTrue(success)
         return self
 
+    def check_not_contains(self, str_should_contain):
+        success = str_should_contain in self.content
+        if success:
+            print(str_should_contain + "\n IN\n" + self.content)
+        TestCase().assertFalse(success)
+        return self
+
+    def check_true(self, bool_var):
+        TestCase().assertTrue(bool_var)
+
+    def check_false(self, bool_var):
+        TestCase().assertFalse(bool_var)
+
     def do_request(self, router, method_type, json):
         if self.enable_token:
             self._client.credentials(
@@ -80,6 +92,12 @@ class TestClient:
         self.token = generate_access_token(user.id, ACCOUNT_TYPE_USER)
         return self
 
+    def get_user_id(self, name):
+        user = User.objects.get(nickname=name)
+        if user is None:
+            TestCase().fail("internal error -> can not obtain token")
+        return user.id
+
     def with_admin_token(self, username):
         self.enable_token = True
         admin = Admin.objects.get(username=username)
@@ -87,7 +105,7 @@ class TestClient:
             TestCase().fail("internal error -> can not obtain token")
         self.token = generate_access_token(admin.id, ACCOUNT_TYPE_ADMIN)
         return self
-    
+
     def with_admin_refresh_token(self, username):
         self.enable_token = True
         admin = Admin.objects.get(username=username)

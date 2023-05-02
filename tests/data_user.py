@@ -12,9 +12,10 @@ class UserTestData(DataProvider):
         User.objects.create(
             email=USER_EMAIL,
             password=USER_PASSWORD,
-            nickname="test_1",
+            nickname=USER_NICKNAME,
             is_confirmed=False,
         )
+
 
 class UserTestTwoData(DataProvider):
     def set_data(self):
@@ -24,6 +25,7 @@ class UserTestTwoData(DataProvider):
             nickname="test_2"
         )
 
+
 class UserTestDataNotConfirmed(DataProvider):
     def set_data(self):
         User.objects.create(
@@ -32,6 +34,7 @@ class UserTestDataNotConfirmed(DataProvider):
             nickname="test_not_confirmed",
             is_confirmed=False,
         )
+
 
 class UserTestDataGotBanned(DataProvider):
     def set_data(self):
