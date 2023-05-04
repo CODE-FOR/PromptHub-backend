@@ -130,7 +130,7 @@ def personized_prompt_list(request: HttpRequest):
         prompt_list = list(recommand_prompt_set)
         # 2. random prompts: 200
         unsampled_prompt_list = Prompt.objects.filter(upload_status=LANCHED)
-        count = 200
+        count = unsampled_prompt_list.count()
         random.seed(100)
         random_list = random.sample(range(0, count), count)
         random_prompt_list = [unsampled_prompt_list[index] for index in random_list][:count]

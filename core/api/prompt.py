@@ -179,6 +179,7 @@ def get_prompt(request: HttpRequest):
 @require_http_methods("GET")
 def get_editing_prompt(request: HttpRequest):
     data = request.GET.dict()
+    user = request.user
     if not data:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
@@ -188,6 +189,8 @@ def get_editing_prompt(request: HttpRequest):
     if not Prompt.objects.filter(id=prompt_id).exists():
         return failed_api_response(StatusCode.ID_NOT_EXISTS, "作品不存在")
     prompt = Prompt.objects.get(id=prompt_id)
+    if user != prompt.uploader:
+        return failed_api_response(StatusCode.BAD_REQUEST, "用户无权限编辑该作品")
 
     return success_api_response(
         msg="成功获得编辑作品详情",
