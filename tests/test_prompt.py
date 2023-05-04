@@ -2,7 +2,7 @@ from tests.test_utils import *
 from tests.data_user import *
 from tests.data_prompt import *
 
-class AdminModelTestCase(TestCase):
+class PromptModelTestCase(TestCase):
     def setUp(self):
         self.data = DataSet(UserTestData(),
                             PromptOneTestData(),
