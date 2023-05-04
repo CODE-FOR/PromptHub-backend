@@ -91,50 +91,16 @@ def hot_prompt_list(request: HttpRequest):
 @require_http_methods("GET")
 def personized_prompt_list(request: HttpRequest):
     data = request.GET.dict()
-    
-    user = get_user_from_token(request)
-    user_id = -1 if user is None else user.id
 
     per_page = int(data.get("per_page", 30))
     page_index = int(data.get("page_index", 1))
 
-    if user_id == -1:
-        unsampled_prompt_list = Prompt.objects.filter(upload_status=LANCHED)
-        count = unsampled_prompt_list.count()
-        random.seed(100)
-        random_list = random.sample(range(0, count), count)
-        prompt_list = [unsampled_prompt_list[index] for index in random_list]
-    else:
-        collect_record_prompts = set()
-        for collection in user.collection_list.all():
-            collect_record_prompts = collect_record_prompts.\
-                union(collect_record.prompt for collect_record in collection.collect_record_list.all())
-        lastest_collected_prompts = sorted(collect_record_prompts, key=lambda t: t.created_at, reverse=True)[:10]
-        lastest_viewed_propmts = [history.prompt for history in \
-                                  list(History.objects.filter(user=user).order_by("-created_at"))[:10]]
-        lastest_prompts = set(lastest_collected_prompts).union(lastest_viewed_propmts)
-        
-        recommand_prompt_set = set()
-        # 1. related prompts
-        recommend_prompts = get_recommand_prompt_dict()
-        for prompt in lastest_prompts:
-            recommend_top_prompt_ids = recommend_prompts.get(str(prompt.id), None)
-            if recommend_top_prompt_ids is None:
-                continue
-            recommand_top_prompt_list = []
-            for prompt_id in recommend_top_prompt_ids:
-                if not Prompt.objects.filter(id=prompt_id).exists():
-                    continue
-                recommand_top_prompt_list.append(Prompt.objects.get(id=prompt_id))
-            recommand_prompt_set = recommand_prompt_set.union(recommand_top_prompt_list)
-        prompt_list = list(recommand_prompt_set)
-        # 2. random prompts: 200
-        unsampled_prompt_list = Prompt.objects.filter(upload_status=LANCHED)
-        count = 200
-        random.seed(100)
-        random_list = random.sample(range(0, count), count)
-        random_prompt_list = [unsampled_prompt_list[index] for index in random_list][:count]
-        prompt_list.extend(random_prompt_list)
+    # random
+    unsampled_prompt_list = Prompt.objects.filter(upload_status=LANCHED)
+    count = unsampled_prompt_list.count()
+    random.seed(100)
+    random_list = random.sample(range(0, count), count)
+    prompt_list = [unsampled_prompt_list[index] for index in random_list]
     
     paginator = Paginator(prompt_list, per_page)
     page_prompt = paginator.page(page_index)

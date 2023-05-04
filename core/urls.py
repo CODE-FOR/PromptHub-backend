@@ -150,7 +150,7 @@ urlpatterns = [
     path("prompt_list/search_prompt_keyword", search_prompt_keyword,
          name="prompt_list_search_prompt_keyword"),
     path("prompt_list/hot_prompt_list", hot_prompt_list,
-         name="prompt_lit_hot_prompt_list"),
+         name="prompt_list_hot_prompt_list"),
     path("prompt_list/personized_prompt_list", personized_prompt_list,
          name="prompt_list_personalized_prompt_list"),
 
