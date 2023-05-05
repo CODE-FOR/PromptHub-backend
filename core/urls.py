@@ -35,7 +35,6 @@ urlpatterns = [
     path("user/forget_password", forget_password),
     path("user/confirm_forget_password", confirm_forget_password),
     path("user/change_password", change_password),
-    # path("user/modify_user_info", modify_user_info),
     path("user/change_avatar", change_avatar),
     path("user/change_nickname", change_nickname),
 
