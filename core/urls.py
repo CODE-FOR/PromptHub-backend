@@ -50,7 +50,6 @@ urlpatterns = [
     path("user/confirm_forget_password", confirm_forget_password,
          name="user_confirm_forget_password"),
     path("user/change_password", change_password, name="user_change_password"),
-    # path("user/modify_user_info", modify_user_info),
     path("user/change_avatar", change_avatar, name="user_change_avatar"),
     path("user/change_nickname", change_nickname, name="user_change_nickname"),
 
