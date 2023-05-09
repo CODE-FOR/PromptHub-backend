@@ -85,12 +85,23 @@ def edit_prompt(request: HttpRequest):
         or len(prompt_attribute) > 4096:
         return failed_api_response(StatusCode.BAD_REQUEST, "内容过长")
     
-    prompt_object.prompt = prompt
-    prompt_object.picture = picture
-    prompt_object.model = model
-    prompt_object.width = width
-    prompt_object.height = height
-    prompt_object.prompt_attribute = prompt_attribute
+    new_prompt_object = Prompt.objects.create(
+        prompt=prompt,
+        picture=picture,
+        model=model,
+        width=width,
+        height=height,
+        prompt_attribute=prompt_attribute,
+        upload_status=UNDER_REVIEW,
+        uploader=user
+    )
+    
+    # prompt_object.prompt = prompt
+    # prompt_object.picture = picture
+    # prompt_object.model = model
+    # prompt_object.width = width
+    # prompt_object.height = height
+    # prompt_object.prompt_attribute = prompt_attribute
     prompt_object.upload_status = UNDER_REVIEW
     prompt_object.save()
 
@@ -102,12 +113,12 @@ def edit_prompt(request: HttpRequest):
     for audit_record in existing_in_progress_audit_record:
         audit_record.delete()
 
-    new_audit_record(user, prompt_object)
+    new_audit_record(user, new_prompt_object)
 
     return success_api_response(
         msg="成功修改作品, 等待审核",
         data={
-            "id": prompt_object.id
+            "id": new_prompt_object.id
         }
     )
 
