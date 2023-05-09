@@ -10,3 +10,5 @@ db.sqlite3
 
 # this is lzw's virtualenv dir, do not delete it
 back/
+
+recommend_prompt.json
