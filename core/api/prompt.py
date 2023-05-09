@@ -96,22 +96,20 @@ def edit_prompt(request: HttpRequest):
         uploader=user
     )
     
-    # prompt_object.prompt = prompt
-    # prompt_object.picture = picture
-    # prompt_object.model = model
-    # prompt_object.width = width
-    # prompt_object.height = height
-    # prompt_object.prompt_attribute = prompt_attribute
     prompt_object.upload_status = UNDER_REVIEW
     prompt_object.save()
+
+    '''AuditRecord and Prompt is 1 to 1, for when edit a prompt, a new prompt will be created instead of change the prompt itself'''
+    '''so user get here is safe'''
+    '''The IN_PROGRESS audit_record will be deleted, and a new IN_PROGRESS audit_record will be created'''
+    '''other audit_record will not be deleted, but will be set to unvisible'''
+    AuditRecord.objects.get(promp=prompt).be_unvisible()
+    existing_in_progress_audit_record = AuditRecord.objects.filter(prompt=prompt_object, status=IN_PROGRESS)[0]
+    existing_in_progress_audit_record.delete()
 
     comment_list = Comment.objects.filter(prompt=prompt_object)
     for comment in comment_list:
         comment.delete()
-
-    existing_in_progress_audit_record = AuditRecord.objects.filter(prompt=prompt_object, status=IN_PROGRESS)
-    for audit_record in existing_in_progress_audit_record:
-        audit_record.delete()
 
     new_audit_record(user, new_prompt_object)
 

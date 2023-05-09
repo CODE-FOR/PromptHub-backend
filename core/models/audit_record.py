@@ -18,6 +18,7 @@ class AuditRecord(models.Model):
     status = models.IntegerField(choices=AUDIT_STATUS_CHOICES)
     feedback = models.CharField(max_length=4096)
     is_delete = models.BooleanField(default=False)
+    user_visible = models.BooleanField(default=True)
 
     def to_dict(self):
         data = {
@@ -40,4 +41,8 @@ class AuditRecord(models.Model):
 
     def be_rejected(self):
         self.status = REJECTED
+        self.save()
+
+    def be_unvisible(self):
+        self.user_visible = False
         self.save()
