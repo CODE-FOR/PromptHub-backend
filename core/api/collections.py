@@ -197,7 +197,9 @@ def mod_collection(request: HttpRequest):
         return failed_api_response(StatusCode.BAD_REQUEST, "名字过长")
 
     if Collection.objects.filter(name=name, user=user).exists():
-        return failed_api_response(StatusCode.CONFLICT, "不可以使用重复的名字")
+        c = Collection.objects.get(name=name, user=user)
+        if c.id != collection_id:
+            return failed_api_response(StatusCode.CONFLICT, "不可以使用重复的名字")
 
     collection.name = name
     collection.visibility = visibility
