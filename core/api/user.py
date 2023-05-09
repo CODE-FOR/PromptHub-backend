@@ -241,9 +241,11 @@ def get_audit_record_list(request: HttpRequest):
 
     user = request.user
 
-    paginator = Paginator(AuditRecord.objects.filter(status=status, user=user, user_visible=True, is_delete=False).order_by("-id"), per_page) \
-                if status != -1 else \
-                Paginator(AuditRecord.objects.filter(user=user, is_delete=False).order_by("-id"), per_page)
+    if status != -1:
+        paginator = Paginator(
+            AuditRecord.objects.filter(status=status, user=user, user_visible=True, is_delete=False).order_by("-id"), per_page)
+    else:
+        paginator = Paginator(AuditRecord.objects.filter(user=user, is_delete=False).order_by("-id"), per_page)
     page_audit_record = paginator.page(page_index)
 
     audit_record_list = []
