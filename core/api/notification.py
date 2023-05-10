@@ -80,7 +80,7 @@ def get_unread_notification_num(request: HttpRequest):
 @user_jwt_auth()
 @require_http_methods("POST")
 def update_notification(request: HttpRequest):
-    data = request.GET.dict()
+    data = parse_data(request)
     if not data:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数错误")
     
