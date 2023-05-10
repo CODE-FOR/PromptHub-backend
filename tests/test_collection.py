@@ -45,7 +45,6 @@ class CollectionTestCase(TestCase):
                 'id': id
             }
         ).check_contains("成功").check_code(200)
-        pass
 
     def test_get_collection_info(self):
         user = User.objects.get(nickname=USER_NICKNAME)
@@ -169,6 +168,7 @@ class CollectionTestCase(TestCase):
                                          visibility=1)
         prompt = Prompt.objects.get(prompt='prompt_for_collection2')
         CollectRecord.objects.create(prompt=prompt, collection=col1)
+        CollectRecord.objects.create(prompt=prompt, collection=col2)
         CollectRecord.objects.create(prompt=prompt, collection=col3)
         self.client.with_user_token(USER_EMAIL).do_request(
             'collection_get_user_prompt_collection_relation',
@@ -177,3 +177,19 @@ class CollectionTestCase(TestCase):
                 "prompt_id": prompt.id
             }
         ).check_code(200).check_contains('成功').check_contains('test_collection_1')
+
+    def test_get_collection_record_list(self):
+        user = User.objects.get(nickname=USER_NICKNAME)
+        Collection.objects.create(name='get_collection_record_list', user=user,
+                                  visibility=0)
+        id = Collection.objects.get(name="get_collection_record_list").id
+        self.client \
+        .do_request(
+            "collection_get_collection_record_list",
+            GET,
+            {
+                "id": id
+            }
+        ) \
+        .check_code(200) \
+        .check_contains("成功")

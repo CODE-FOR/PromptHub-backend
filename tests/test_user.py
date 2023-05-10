@@ -116,3 +116,33 @@ class UserModelTestCase(TestCase):
         ) \
         .check_code(200) \
         .check_contains("成功")
+    
+    def test_delete_user_record(self):
+        user = User.objects.get(email=RECORD_USER_EMAIL)
+        audit_records = AuditRecord.objects.filter(user=user)
+        audit_record = audit_records[0]
+        wrong_user = User.objects.get(email=USER_EMAIL)
+        self.client \
+        .with_user_token(wrong_user.email) \
+        .do_request(
+            "user_delete_audit_record",
+            DELETE,
+            {
+                "audit_record_id": audit_record.id
+            }
+        ) \
+        .check_code(400) \
+        .check_contains("无权")
+        self.client \
+        .with_user_token(user.email) \
+        .do_request(
+            "user_delete_audit_record",
+            DELETE,
+            {
+                "audit_record_id": audit_record.id
+            }
+        ) \
+        .check_code(200) \
+        .check_contains("成功")
+
+

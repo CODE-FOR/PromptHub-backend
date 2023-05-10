@@ -23,6 +23,17 @@ class PromptModelTestCase(TestCase):
             POST, {"id": prompt.id, "prompt": "prompt", "picture": "picture.jpg", "model": "model", "width": 512, "height": 512, "prompt_attribute": ""}
         ).check_contains("成功").check_code(200)
 
+    def test_get_prompt(self):
+        user = User.objects.filter(email=PROMPT_USER_EMAIL)[0]
+        prompt = Prompt.objects.filter(uploader=user)[0]
+        self.client.do_request(
+            "prompt_get_prompt",
+            GET,
+            {
+                "id": prompt.id
+            }
+        ).check_code(200).check_contains("成功")
+
     def test_edit_prompt_fail(self):
         user = User.objects.filter(email=PROMPT_USER_EMAIL)[0]
         prompt = Prompt.objects.filter(uploader=user)[0]

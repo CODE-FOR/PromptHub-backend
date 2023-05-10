@@ -130,7 +130,7 @@ class NotificationModelTestCase(TestCase):
             }
         ).check_code(200).check_contains('unread_notification_num\": 1')
 
-    def update_notif(self):
+    def test_update_notif(self):
         user = User.objects.get(nickname=USER_NICKNAME)
         prompt = Prompt.objects.create(
             prompt="prompt_get_notif_list",
@@ -151,4 +151,4 @@ class NotificationModelTestCase(TestCase):
                 'id': notif.id,
                 'status': READ
             }
-        ).check_code(200)
+        ).check_code(200).check_contains("成功")

@@ -289,7 +289,7 @@ def get_collection_record_list(request: HttpRequest):
     if collection is None or (collection.visibility == PRIVATE and collection.user.id != user_id):
         return failed_api_response(StatusCode.ID_NOT_EXISTS, "无此收藏夹或者不允许访问")
 
-    collection_records = CollectRecord.objects.filter(collection_id=collection_id)
+    collection_records = CollectRecord.objects.filter(collection_id=collection_id).order_by("-created_at")
     paginator = Paginator(collection_records, per_page)
     page_records = paginator.page(page_index)
 
