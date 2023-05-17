@@ -89,8 +89,6 @@ def forget_password(request: HttpRequest):
     email = data.get("email")
     if email is None:
         return failed_api_response(StatusCode.BAD_REQUEST, "参数不完整")
-    if not User.objects.filter(email=email).exists():
-        return failed_api_response(StatusCode.CONFLICT, "邮箱不存在")
     
     send_forget_password_email(email)
     return success_api_response(msg="验证码已发送")

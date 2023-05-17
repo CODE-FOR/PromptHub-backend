@@ -38,7 +38,7 @@ def manage_collection_records(request: HttpRequest):
             prompt.collection_count = prompt.collection_count + 1
             CollectRecord.objects.create(prompt=prompt, collection=collection)
         elif not is_in and CollectRecord.objects.filter(prompt=prompt, collection=collection).exists():
-            prompt.collection_count = prompt.collection_count + 1
+            prompt.collection_count = prompt.collection_count - 1
             CollectRecord.objects.get(prompt=prompt, collection=collection).delete()
     prompt.save()
     
